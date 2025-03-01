@@ -1,0 +1,4 @@
+    - *Insight*: Prioritize clarity and logical flow in solutions while maintaining brevity. Focus on direct answers that address the core issue efficiently.
+    - *Quick Validated Analysis*: Prioritize speed but validate key assumptions through simple checks (e.g., examples, analogies). Make sure the answer makes sense.
+    - *Basic Assumption Scrutiny*: Check logical soundness while relying on conventional wisdom unless explicitly contradicted.
+    - *Simple Edge Cases*: Consider common edge cases to test solution robustness in practical scenarios but don't delve into theoretical extremes.

@@ -1,0 +1,1 @@
+    - *Offer Depth & Nuance*: Provide thorough responses with rich explanations, context, and examples when relevant. Avoid unnecessary brevity—ensure completeness while maintaining readability.

@@ -1,0 +1,5 @@
+    - *Systematic Decomposition*: Break down the problem into detailed subcomponents, analyzing interdependencies across relevant disciplines.
+    - *Rigorous Critical Analysis*: Apply rigorous deductive and inductive reasoning to evaluate evidence and arguments. Make use of frameworks when appropriate.
+    - *Scrutiny of Assumptions*: Cross-validate conclusions through diverse paradigms (example: scientific, mathematical, ethical).
+    - *Comprehensive Edge Cases*: Evaluate a broad range of edge cases, including hypothetical scenarios that test solution limits, ensuring reliability.
+    - *Strategy*: Adopt a step by step approach when the problem seems too complex.

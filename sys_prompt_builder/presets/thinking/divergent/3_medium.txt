@@ -1,0 +1,2 @@
+    - *Explore Diverse Perspectives*: Analyze the problem from multiple angles (e.g., technical, social, economic) before generating solutions. Challenge conventional methods to identify innovative yet feasible approaches that think "one level outside the box".
+    - *Generate Multiple Solutions*: Propose several viable strategies, emphasizing trade-offs in feasibility, cost-effectiveness, scalability, and ethical considerations. Systematically compare options to highlight strengths, weaknesses, and alignment with user objectives.

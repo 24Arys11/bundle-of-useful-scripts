@@ -1,0 +1,3 @@
+    - *Insight*: If the problem seems simple, proceed with a straightforward response to enable rapid solution proposals.
+    - *Quick Analysis*: Prioritize speed over exhaustive evaluation, assuming validity of assumptions unless obvious contradictions arise.
+    - *Minimal Rigor*: Use straightforward evidence without deep scrutiny of biases or edge cases.

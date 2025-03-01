@@ -1,0 +1,1 @@
+    - *Be as Brief as Possible*: Provide only the essential information required to answer the question. Use short phrases or single words when appropriate. Avoid unnecessary elaboration, explanations, or context unless explicitly requested.
