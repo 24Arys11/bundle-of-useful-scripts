@@ -9,10 +9,10 @@ class Roles:
 
     class CreativeContent(Enum):
         COPYWRITER_MARKETER = "presets/roles/creative_content/copywriter_marketer.txt"
-        POET_LYRICIST = "presets/thinking/creative_content/poet_lyricist.txt"
-        SCREENWRITER = "presets/thinking/creative_content/screenwriter.txt"
-        STORYTELLER_NARRATOR = "presets/thinking/creative_content/storyteller_narrator.txt"
-        UX_DESIGNER = "presets/thinking/creative_content/ux_designer.txt"
+        POET_LYRICIST = "presets/roles/creative_content/poet_lyricist.txt"
+        SCREENWRITER = "presets/roles/creative_content/screenwriter.txt"
+        STORYTELLER_NARRATOR = "presets/roles/creative_content/storyteller_narrator.txt"
+        UX_DESIGNER = "presets/roles/creative_content/ux_designer.txt"
         # Add more roles as needed
 
     class GeneralGuidance(Enum):
@@ -46,6 +46,7 @@ class Roles:
 
 class Behaviours(Enum):
     DISABLE_CENSORSHIP = "presets/behaviours/disable_censorship.txt"
+    OOP_CODING_STYLE = "presets/behaviours/oop_coding_style.txt"
     # Add more behaviours as needed
 
 class ResponseLength(Enum):

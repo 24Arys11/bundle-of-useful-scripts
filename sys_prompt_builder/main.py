@@ -4,11 +4,14 @@ from data import Roles, Behaviours, ResponseLength, Thinking, UserInteraction
 prompt_builder = PromptBuilder()
 
 # Add roles
-# prompt_builder.add_role(Roles.TechScience.SOFTWARE_ENGINEER)
-# prompt_builder.add_role(Roles.TechScience.DATA_SCIENTIST)
+prompt_builder.add_role(Roles.GeneralGuidance.TEACHER)
+prompt_builder.add_role(Roles.TechScience.SOFTWARE_ENGINEER)
+prompt_builder.add_role(Roles.TechScience.DATA_SCIENTIST)
+prompt_builder.add_role(Roles.TechScience.AI_EXPERT)
+prompt_builder.add_role(Roles.CreativeContent.UX_DESIGNER)
 
 # Enable behaviours
-prompt_builder.enable_behaviour(Behaviours.DISABLE_CENSORSHIP)
+# prompt_builder.enable_behaviour(Behaviours.DISABLE_CENSORSHIP)
 
 # Set response length
 # prompt_builder.set_response_length(ResponseLength.MEDIUM)
