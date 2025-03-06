@@ -1,7 +1,7 @@
 
 # Project Title
 
-A prompt builder for easier 
+A prompt builder for generating high quality system prompts with ease.
 
 ## Recommendations
 

@@ -2,9 +2,13 @@ from enum import Enum
 
 class Roles:
     class BusinessFinance(Enum):
-        BUSINESS_STRATEGIST = "presets/roles/business_finance/business_strategist.txt"
         FINANCIAL_ANALYST = "presets/roles/business_finance/financial_analyst.txt"
         LEGAL_ADVISOR = "presets/roles/business_finance/legal_advisor.txt"
+        # Add more roles as needed
+
+    class StrategyAndBusiness(Enum):
+        BUSINESS_STRATEGIST = "presets/roles/strategy_business/business_strategist.txt"
+        SYSTEMIC_STRATEGIST = "presets/roles/strategy_business/systemic_strategist.txt"
         # Add more roles as needed
 
     class CreativeContent(Enum):
@@ -21,6 +25,7 @@ class Roles:
         RESEARCHER = "presets/roles/general_guidance/researcher.txt"
         SOCRATIC_GUIDE = "presets/roles/general_guidance/socratic_guide.txt"
         TEACHER = "presets/roles/general_guidance/teacher.txt"
+        GROWTH_ACCOUNTABILITY_COACH = "presets/roles/general_guidance/growth_n_accountability_coach.txt"
         # Add more roles as needed
 
     class HealthWellbeing(Enum):
@@ -46,7 +51,6 @@ class Roles:
 
 class Behaviours(Enum):
     DISABLE_CENSORSHIP = "presets/behaviours/disable_censorship.txt"
-    OOP_CODING_STYLE = "presets/behaviours/oop_coding_style.txt"
     # Add more behaviours as needed
 
 class ResponseLength(Enum):
@@ -55,6 +59,11 @@ class ResponseLength(Enum):
     MEDIUM = "presets/response_length/3_medium.txt"
     HIGH = "presets/response_length/4_high.txt"
     STORY_TELLER = "presets/response_length/5_story_teller.txt"
+
+class AdviceType(Enum):
+    SOFT = "presets/advice_type/1_soft.txt"
+    BALLANCED = "presets/advice_type/2_ballanced.txt"
+    HARSH = "presets/advice_type/3_harsh.txt"
 
 class Thinking:
     class Divergent(Enum):

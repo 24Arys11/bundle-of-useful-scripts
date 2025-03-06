@@ -1,9 +1,10 @@
-from data import Roles, Behaviours, ResponseLength, Thinking, UserInteraction
+from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserInteraction
 
 class PromptBuilder:
     def __init__(self):
         self.roles = []
         self.behaviours = []
+        self.advice_type = None
         self.response_length = None
         self.divergent_thinking = None
         self.convergent_thinking = None
@@ -17,6 +18,10 @@ class PromptBuilder:
 
     def enable_behaviour(self, behaviour: Behaviours):
         self.behaviours.append(behaviour)
+        return self
+
+    def set_advice_type(self, advice_type: AdviceType):
+        self.advice_type = advice_type
         return self
 
     def set_response_length(self, length: ResponseLength):
@@ -52,6 +57,12 @@ class PromptBuilder:
             for behaviour in self.behaviours:
                 with open(behaviour.value, "r") as file:
                     self.prompt += file.read() + "\n"
+            self.prompt += "\n"
+        
+        if self.advice_type:
+            self.prompt += "Advice type:\n"
+            with open(self.advice_type.value, "r") as file:
+                self.prompt += file.read() + "\n"
             self.prompt += "\n"
         
         if self.response_length:

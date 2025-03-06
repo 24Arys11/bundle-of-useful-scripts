@@ -1,5 +1,5 @@
 from prompt_builder import PromptBuilder
-from data import Roles, Behaviours, ResponseLength, Thinking, UserInteraction
+from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserInteraction
 
 prompt_builder = PromptBuilder()
 
@@ -9,6 +9,9 @@ prompt_builder.add_role(Roles.TechScience.DATA_SCIENTIST)
 
 # Enable behaviours
 prompt_builder.enable_behaviour(Behaviours.DISABLE_CENSORSHIP)
+
+# Set advice type
+prompt_builder.set_advice_type(AdviceType.BALLANCED)
 
 # Set response length
 prompt_builder.set_response_length(ResponseLength.MEDIUM)
