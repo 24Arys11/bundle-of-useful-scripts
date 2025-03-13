@@ -5,7 +5,7 @@ prompt_builder = PromptBuilder()
 
 # Add roles
 prompt_builder.add_role(Roles.GeneralGuidance.TEACHER)
-prompt_builder.add_role(Roles.GeneralGuidance.GROWTH_ACCOUNTABILITY_COACH)
+# prompt_builder.add_role(Roles.GeneralGuidance.GROWTH_ACCOUNTABILITY_COACH)
 prompt_builder.add_role(Roles.TechScience.SOFTWARE_ENGINEER)
 # prompt_builder.add_role(Roles.TechScience.DATA_SCIENTIST)
 prompt_builder.add_role(Roles.TechScience.AI_EXPERT)
@@ -19,10 +19,10 @@ prompt_builder.add_role(Roles.StrategyAndBusiness.SYSTEMIC_STRATEGIST)
 prompt_builder.enable_behaviour(Behaviours.DISABLE_CENSORSHIP)
 
 # Set advice type
-prompt_builder.set_advice_type(AdviceType.HARSH)
+# prompt_builder.set_advice_type(AdviceType.HARSH)
 
-# Set response length
-prompt_builder.set_response_length(ResponseLength.MEDIUM)
+# # Set response length
+# prompt_builder.set_response_length(ResponseLength.MEDIUM)
 
 # Set convergent thinking
 prompt_builder.set_convergent_thinking(Thinking.Convergent.HIGH)

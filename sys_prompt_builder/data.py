@@ -49,9 +49,25 @@ class Roles:
         SOFTWARE_ENGINEER = "presets/roles/tech_science/software_engineer.txt"
         # Add more roles as needed
 
+    @staticmethod
+    def get_all_roles():
+        return {
+            "BusinessFinance": list(Roles.BusinessFinance),
+            "StrategyAndBusiness": list(Roles.StrategyAndBusiness),
+            "CreativeContent": list(Roles.CreativeContent),
+            "GeneralGuidance": list(Roles.GeneralGuidance),
+            "HealthWellbeing": list(Roles.HealthWellbeing),
+            "SpecializedUnique": list(Roles.SpecializedUnique),
+            "TechScience": list(Roles.TechScience)
+        }
+
 class Behaviours(Enum):
     DISABLE_CENSORSHIP = "presets/behaviours/disable_censorship.txt"
     # Add more behaviours as needed
+
+    @staticmethod
+    def get_all_behaviours():
+        return list(Behaviours)
 
 class ResponseLength(Enum):
     MINIMAL = "presets/response_length/1_minimal.txt"
@@ -60,10 +76,18 @@ class ResponseLength(Enum):
     HIGH = "presets/response_length/4_high.txt"
     STORY_TELLER = "presets/response_length/5_story_teller.txt"
 
+    @staticmethod
+    def get_all_response_lengths():
+        return list(ResponseLength)
+
 class AdviceType(Enum):
     SOFT = "presets/advice_type/1_soft.txt"
     BALLANCED = "presets/advice_type/2_ballanced.txt"
     HARSH = "presets/advice_type/3_harsh.txt"
+
+    @staticmethod
+    def get_all_advice_types():
+        return list(AdviceType)
 
 class Thinking:
     class Divergent(Enum):
@@ -80,9 +104,20 @@ class Thinking:
         HIGH = "presets/thinking/convergent/4_high.txt"
         DEEP_ANALYSIS = "presets/thinking/convergent/5_deep_analysis.txt"
 
+    @staticmethod
+    def get_all_thinking_types():
+        return {
+            "Divergent": list(Thinking.Divergent),
+            "Convergent": list(Thinking.Convergent)
+        }
+
 class UserInteraction(Enum):
     MINIMAL = "presets/user_interaction/1_minimal.txt"
     LOW = "presets/user_interaction/2_low.txt"
     MEDIUM = "presets/user_interaction/3_medium.txt"
     HIGH = "presets/user_interaction/4_high.txt"
     BABYSITTER = "presets/user_interaction/5_babysitter.txt"
+
+    @staticmethod
+    def get_all_user_interactions():
+        return list(UserInteraction)
