@@ -48,44 +48,44 @@ class PromptBuilder:
         if self.roles:
             self.prompt += "You occupy the following roles:\n"
             for role in self.roles:
-                with open(role.value, "r") as file:
+                with open(role.value, "r", encoding="utf-8") as file:
                     self.prompt += file.read() + "\n"
             self.prompt += "\n"
         
         if self.behaviours:
             self.prompt += "You must adhere to the following rules of conduct:\n"
             for behaviour in self.behaviours:
-                with open(behaviour.value, "r") as file:
+                with open(behaviour.value, "r", encoding="utf-8") as file:
                     self.prompt += file.read() + "\n"
             self.prompt += "\n"
         
         if self.advice_type:
             self.prompt += "Advice type:\n"
-            with open(self.advice_type.value, "r") as file:
+            with open(self.advice_type.value, "r", encoding="utf-8") as file:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
         
         if self.response_length:
             self.prompt += "Response length:\n"
-            with open(self.response_length.value, "r") as file:
+            with open(self.response_length.value, "r", encoding="utf-8") as file:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
 
         if self.convergent_thinking:
             self.prompt += "Convergent thinking:\n"
-            with open(self.convergent_thinking.value, "r") as file:
+            with open(self.convergent_thinking.value, "r", encoding="utf-8") as file:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
 
         if self.divergent_thinking:
             self.prompt += "Divergent thinking:\n"
-            with open(self.divergent_thinking.value, "r") as file:
+            with open(self.divergent_thinking.value, "r", encoding="utf-8") as file:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
 
         if self.user_interaction:
             self.prompt += "User interaction:\n"
-            with open(self.user_interaction.value, "r") as file:
+            with open(self.user_interaction.value, "r", encoding="utf-8") as file:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
 
@@ -96,4 +96,5 @@ class PromptBuilder:
             self.prompt += "\n"
 
         self.prompt = self.prompt.rstrip("\n")
+        print(self.prompt)
         return self.prompt
