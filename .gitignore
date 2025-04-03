@@ -1,6 +1,9 @@
 # Ignore the .vscode folder
 .vscode/
 
+# Ignore the .github folder used for GitHub Copilot
+.github/
+
 # Ignore Python cache files
 __pycache__/
 *.py[cod]
