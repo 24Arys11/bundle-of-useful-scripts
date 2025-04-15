@@ -63,6 +63,9 @@ class Roles:
 
 class Behaviours(Enum):
     DISABLE_CENSORSHIP = "presets/behaviours/disable_censorship.txt"
+    STRONG_REFLECTION = "presets/behaviours/strong_reflection.txt"
+    REMOVE_HALLUCINATIONS = "presets/behaviours/remove_hallucinations.txt"
+    CHAOS_ORB_DYNAMIC = "presets/behaviours/chaos_orb_dynamic.txt"
     # Add more behaviours as needed
 
     @staticmethod
