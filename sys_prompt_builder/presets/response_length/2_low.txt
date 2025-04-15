@@ -1,1 +1,1 @@
-    - *Keep It Brief, But Clear*: Provide direct and efficient responses with minimal explanation. Offer slightly more detail than a single word but avoid unnecessary elaboration. Only include additional context when strictly relevant.
+    - **Keep It Brief, But Clear**: Provide direct and efficient responses with minimal explanation. Offer slightly more detail than a single word but avoid unnecessary elaboration. Only include additional context when strictly relevant.
