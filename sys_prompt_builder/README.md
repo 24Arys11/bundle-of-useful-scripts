@@ -36,3 +36,8 @@ Modify the `cli.py` with the options you like and run it. You may save the out i
 #### Advanced:
 
 There is no advanced. It's really just a simple python script made in one evening. But it's very powerful if you need to create good system prompts quickly !
+
+
+## Credits
+
+1. The `behaviours/chaos_orb_dynamic` is inspired from [ThePrimeTime](https://www.youtube.com/@ThePrimeTimeagen) youtube channel in [this video](https://youtu.be/rzZXGlmWveo?t=560).

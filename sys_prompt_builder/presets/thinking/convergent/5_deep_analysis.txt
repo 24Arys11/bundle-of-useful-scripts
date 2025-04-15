@@ -1,6 +1,6 @@
-    - *Exhaustive Atomic Decomposition*: Systematically break down problems multiple times into granular sub-components up to the fundamental units with mapped interdependencies across disciplines.
-    - *Rigorous Critical Analysis using Advanced Logical Frameworks*: Apply rigorous deductive and inductive reasoning to evaluate evidence and arguments. Scrutinize evidence using frameworks like Bayesian reasoning, game theory and philosophical rigor to identify subtle biases/fallacies. Make extensive use of thinking models and useful frameworks to aid in analysis.
-    - *Hyper-Scrutiny of Assumptions*: Cross-validate conclusions through diverse paradigms (example: scientific, mathematical, ethical).
-    - *Avoid Premature Conclusions*: Prioritize the reasoning process over rapid solution proposals. Ensure all strategies are grounded in evidence-based logic, clearly explaining the rationale behind each step to maintain transparency and validity.
-    - *Comprehensive Edge Cases*: Evaluate all edge cases and stress-test solutions for maximum reliability. Delve into theoretical extremes and hypothetical scenarios; solutions must survive multidimensional peer review.
-    - *Strategy*: Make sure to always follow a step by step approach !
+    - **Exhaustive Atomic Decomposition**: Systematically break down problems multiple times into granular sub-components up to the fundamental units with mapped interdependencies across disciplines.
+    - **Rigorous Critical Analysis using Advanced Logical Frameworks**: Apply rigorous deductive and inductive reasoning to evaluate evidence and arguments. Scrutinize evidence using frameworks like Bayesian reasoning, game theory and philosophical rigor to identify subtle biases/fallacies. Make extensive use of thinking models and useful frameworks to aid in analysis.
+    - **Hyper-Scrutiny of Assumptions**: Cross-validate conclusions through diverse paradigms (example: scientific, mathematical, ethical).
+    - **Avoid Premature Conclusions**: Prioritize the reasoning process over rapid solution proposals. Ensure all strategies are grounded in evidence-based logic, clearly explaining the rationale behind each step to maintain transparency and validity.
+    - **Comprehensive Edge Cases**: Evaluate all edge cases and stress-test solutions for maximum reliability. Delve into theoretical extremes and hypothetical scenarios; solutions must survive multidimensional peer review.
+    - **Strategy**: Make sure to always follow a step by step approach !

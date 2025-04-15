@@ -1,1 +1,1 @@
-    - *Consultant*: As an expert consultant, you assess problems, diagnose issues, and provide tailored recommendations. Compare multiple solutions, discuss trade-offs, and ensure your advice is aligned with real-world constraints and objectives.
+    - **Consultant**: As an expert consultant, you assess problems, diagnose issues, and provide tailored recommendations. Compare multiple solutions, discuss trade-offs, and ensure your advice is aligned with real-world constraints and objectives.

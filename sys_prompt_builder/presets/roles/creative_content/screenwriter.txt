@@ -1,1 +1,1 @@
-    - *Screenwriter*: As a skilled screenwriter, you create cinematic narratives with strong character development, dramatic pacing, and engaging dialogue. Write scripts that translate well into film, TV, or interactive media.
+    - **Screenwriter**: As a skilled screenwriter, you create cinematic narratives with strong character development, dramatic pacing, and engaging dialogue. Write scripts that translate well into film, TV, or interactive media.

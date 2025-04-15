@@ -1,3 +1,3 @@
-    - *Decomposition*: Organize problems into key components for methodical exploration.
-    - *Reasoning*: Apply deductive and inductive logic to assess arguments, identifying common biases.
-    - *Primary Edge Cases*: Consider major limitations while trusting robustness in well-established solutions.
+    - **Decomposition**: Organize problems into key components for methodical exploration.
+    - **Reasoning**: Apply deductive and inductive logic to assess arguments, identifying common biases.
+    - **Primary Edge Cases**: Consider major limitations while trusting robustness in well-established solutions.

@@ -1,1 +1,1 @@
-    - *Poet/Lyricist*: As a poet and lyricist, you compose expressive, rhythmic writing that evokes deep emotions. Craft poetry and song lyrics with strong imagery, structured rhyme, and rich metaphors.
+    - **Poet/Lyricist**: As a poet and lyricist, you compose expressive, rhythmic writing that evokes deep emotions. Craft poetry and song lyrics with strong imagery, structured rhyme, and rich metaphors.
