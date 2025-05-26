@@ -1,0 +1,29 @@
+class Test{agent_name}Agent(unittest.TestCase):
+    """Test suite for the {agent_name} agent"""
+    
+    def setUp(self):
+        """Set up test fixtures"""
+        self.nodes = Nodes()
+        self.edges = Edges()
+        self.builder = GraphBuilder()
+        self.graph = self.builder.build_agent_graph()
+
+    {node_test_methods}
+
+    {edge_test_methods}
+    
+    def test_full_workflow(self):
+        """
+        Test the {agent_name} agent full workflow.
+        """
+        # TODO: Add test code here
+        print("Testing {agent_name} complete workflow...")
+        
+        # Example test
+        # result = self.graph.invoke({input_dict})
+        # self.assertIsNotNone(result)
+        # print(f"Workflow result: {{result}}")
+
+
+if __name__ == "__main__":
+    unittest.main()

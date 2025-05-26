@@ -1,0 +1,7 @@
+    def {node_name}_node(self, state):
+        """
+        {node_desc}
+        """
+        # TODO: To implement...
+        pass
+

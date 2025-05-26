@@ -1,0 +1,11 @@
+nodes:
+- name: START
+  connections:
+  - example_node
+  description: This is the mandatory initial node `START` !
+  status: TERMINAL
+
+- name: example_node
+  connections: [END]
+  description: This is an example node
+  status: NOT_IMPLEMENTED

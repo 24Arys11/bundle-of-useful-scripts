@@ -1,0 +1,15 @@
+@startuml agent_name
+!define NOT_IMPLEMENTED_NODE_COLOR #IndianRed
+!define IMPLEMENTED_NODE_COLOR #Gold
+!define TESTED_NODE_COLOR #LawnGreen
+!define TERMINAL_NODE_COLOR #DodgerBlue
+
+>>>>>NODES<<<<<
+
+node END TERMINAL_NODE_COLOR[
+  END
+]
+
+>>>>>EDGES<<<<<
+
+@enduml

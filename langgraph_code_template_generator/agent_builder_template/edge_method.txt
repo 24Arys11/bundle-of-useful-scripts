@@ -1,0 +1,8 @@
+    def {node_name}_edge(self, state):
+        """
+        Conditional edge for {node_name} node.
+        Returns one of: {connections_str}
+        """
+        # TODO: To implement...
+        pass
+

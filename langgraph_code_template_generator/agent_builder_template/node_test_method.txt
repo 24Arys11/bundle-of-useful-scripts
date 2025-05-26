@@ -1,0 +1,18 @@
+def test_{node_name}_node(self):
+    """
+    Test the {node_name} node functionality.
+    
+    {node_desc}
+    """
+    # Create an instance of Nodes class
+    nodes = Nodes()
+    
+    # Create a test state
+    test_state = {{}}  # TODO: Initialize with appropriate test data
+    
+    # Test the node function
+    print(f"Testing '{node_name}' node...")
+    nodes.{node_name}_node(test_state)
+    
+    # TODO: Add assertions to verify the state changes
+    print(f"State after node execution: {{test_state}}")

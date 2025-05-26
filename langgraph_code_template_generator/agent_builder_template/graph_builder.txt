@@ -1,0 +1,24 @@
+from langgraph.graph import StateGraph, END, START
+from langgraph.graph.state import CompiledStateGraph
+from graph import State, Nodes, Edges
+
+
+class GraphBuilder:
+    def __init__(self):
+        """
+        Initializes the GraphBuilder.
+        """
+        self.nodes = Nodes()
+        self.edges = Edges()
+        # TODO: Implement the desired constructor.
+        pass
+        
+    def build_agent_graph(self) -> CompiledStateGraph:
+        """Build and return the agent graph."""
+        graph = StateGraph(State)
+        
+        >>>>>NODES<<<<<
+        
+        >>>>>EDGES<<<<<
+        
+        return graph.compile()

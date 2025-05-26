@@ -1,0 +1,23 @@
+
+
+class State:
+    """
+    State class for the agent graph.
+    """
+    # TODO: Define state structure
+    pass
+
+
+class Nodes:
+    """
+    Collection of node functions for the agent graph.
+    """
+    >>>>>NODE_METHODS<<<<<
+
+
+
+class Edges:
+    """
+    Collection of conditional edge functions for the agent graph.
+    """
+    >>>>>CONDITIONAL_EDGE_METHODS<<<<<
