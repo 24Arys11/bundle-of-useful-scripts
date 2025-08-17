@@ -3,6 +3,7 @@
 !define IMPLEMENTED_NODE_COLOR #Gold
 !define TESTED_NODE_COLOR #LawnGreen
 !define TERMINAL_NODE_COLOR #DodgerBlue
+!define TOOLS_NODE_COLOR #MediumPurple
 
 >>>>>NODES<<<<<
 
