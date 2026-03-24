@@ -38,7 +38,7 @@ Traceability document. Updated after every iteration. Defines what has been deci
 ---
 
 ### Step 2 — Folder Refactor
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
 Move all source files into `src/` subfolder. Only launchers and top-level docs remain at root.
 
