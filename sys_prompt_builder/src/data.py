@@ -125,3 +125,65 @@ class UserInteraction(Enum):
     @staticmethod
     def get_all_user_interactions():
         return list(UserInteraction)
+
+class Technologies:
+    class Languages(Enum):
+        PYTHON = "presets/technologies/languages/python.txt"
+        C = "presets/technologies/languages/c.txt"
+        CPP = "presets/technologies/languages/cpp.txt"
+        CSHARP = "presets/technologies/languages/csharp.txt"
+        JAVA = "presets/technologies/languages/java.txt"
+        GO = "presets/technologies/languages/go.txt"
+        RUST = "presets/technologies/languages/rust.txt"
+        SWIFT = "presets/technologies/languages/swift.txt"
+        KOTLIN = "presets/technologies/languages/kotlin.txt"
+        TYPESCRIPT = "presets/technologies/languages/typescript.txt"
+        PHP = "presets/technologies/languages/php.txt"
+        JULIA = "presets/technologies/languages/julia.txt"
+        R = "presets/technologies/languages/r.txt"
+        MATLAB = "presets/technologies/languages/matlab.txt"
+        LISP = "presets/technologies/languages/lisp.txt"
+
+    class Frontend(Enum):
+        REACT = "presets/technologies/frontend/react.txt"
+        ANGULAR = "presets/technologies/frontend/angular.txt"
+        VUE = "presets/technologies/frontend/vue.txt"
+        NEXTJS = "presets/technologies/frontend/nextjs.txt"
+        TAILWINDCSS = "presets/technologies/frontend/tailwindcss.txt"
+        BOOTSTRAP = "presets/technologies/frontend/bootstrap.txt"
+
+    class Backend(Enum):
+        NODEJS = "presets/technologies/backend/nodejs.txt"
+        DJANGO = "presets/technologies/backend/django.txt"
+        SPRING_BOOT = "presets/technologies/backend/spring_boot.txt"
+
+    class Databases(Enum):
+        SQL = "presets/technologies/databases/sql.txt"
+        MONGODB = "presets/technologies/databases/mongodb.txt"
+
+    class Mobile(Enum):
+        FLUTTER = "presets/technologies/mobile/flutter.txt"
+
+    @staticmethod
+    def get_all():
+        return {
+            "Languages": list(Technologies.Languages),
+            "Frontend": list(Technologies.Frontend),
+            "Backend": list(Technologies.Backend),
+            "Databases": list(Technologies.Databases),
+            "Mobile": list(Technologies.Mobile),
+        }
+
+class SpecialPrompts(Enum):
+    REASONING_ENGINE = "presets/special_prompts/reasoning_engine.txt"
+    FUTURE_VISION_GUIDE = "presets/special_prompts/future_vision_guide.txt"
+    PROMPT_CREATOR = "presets/special_prompts/prompt_creator.txt"
+    WRITING_ASSISTANT = "presets/special_prompts/writing_assistant.txt"
+    ATOMIC_SENTENCE_DECOMPOSER = "presets/special_prompts/atomic_sentence_decomposer.txt"
+    INTROSPECTION_INTERVIEWER = "presets/special_prompts/introspection_interviewer.txt"
+    OPPORTUNITY_GAP_CARTOGRAPHER = "presets/special_prompts/opportunity_gap_cartographer.txt"
+    # Add more special prompts as needed
+
+    @staticmethod
+    def get_all():
+        return list(SpecialPrompts)

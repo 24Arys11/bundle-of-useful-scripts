@@ -1,8 +1,9 @@
-from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserInteraction
+from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserInteraction, Technologies
 
 class PromptBuilder:
     def __init__(self):
         self.roles = []
+        self.technologies = []
         self.behaviours = []
         self.advice_type = None
         self.response_length = None
@@ -14,6 +15,11 @@ class PromptBuilder:
 
     def add_role(self, role: Roles):
         self.roles.append(role)
+        return self
+
+    def add_technology(self, technology) -> 'PromptBuilder':
+        """Add a technology-specific best practices preset."""
+        self.technologies.append(technology)
         return self
 
     def enable_behaviour(self, behaviour: Behaviours):
@@ -52,6 +58,13 @@ class PromptBuilder:
                     self.prompt += file.read() + "\n"
             self.prompt += "\n"
         
+        if self.technologies:
+            self.prompt += "Technology best practices:\n"
+            for tech in self.technologies:
+                with open(tech.value, "r", encoding="utf-8") as file:
+                    self.prompt += file.read() + "\n"
+            self.prompt += "\n"
+
         if self.behaviours:
             self.prompt += "You must adhere to the following rules of conduct:\n"
             for behaviour in self.behaviours:

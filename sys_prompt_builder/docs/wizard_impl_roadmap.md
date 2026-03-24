@@ -22,6 +22,11 @@ Traceability document. Updated after every iteration. Defines what has been deci
 | 12 | Dev branch includes A4 Project Information page | Allows user to describe architecture, tech stack, patterns — injected as context into the prompt. Precedes optional A5 Production Guardrails page. |
 | 13 | Cognitive profile uses 5×5 clickable button grid | Each cell = (convergent level, divergent level) pair. Cell text shows a short example AI response at those settings. More visual and decisive than sliders. |
 | 14 | Advice type only shown in Coaching branch | Advice types are designed for coaching; not relevant for dev or research. |
+| 15 | GUI redesigned to 5-column layout | Technologies column was too long to stack under Behaviours; each major category gets its own column for scan-ability |
+| 16 | Copy to Clipboard button placed in `right_frame` below textbox | Logical proximity — the button acts on the textbox content |
+| 17 | Add "Build Special Prompt" feature | Some prompts are standalone and should not concatenate with checkbox selections; dedicated popup with radio select loads file directly |
+| 18 | `presets/special_prompts/` directory for standalone prompts | Separates standalone prompts from composable presets; popup iterates `SpecialPrompts` enum dynamically |
+| 19 | Writing assistant enhanced with PROSE STYLE + LANGUAGE RESTRICTIONS sections | Plain-English behavioral instructions derived from linguistic metric targets; ensures LLM output conforms to the intended prose register without seeing raw numbers |
 
 ---
 
@@ -93,18 +98,48 @@ sys_prompt_builder/
 ---
 
 ### Step 5 — Technology-Specific Best Practices Presets
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-New preset category: `presets/technologies/` (or sub-folder of `roles/tech_science/`).
-Each file contains language/framework-specific best practices to append to the prompt.
+New preset category: `presets/technologies/` with sub-folders by category.
 
-- [ ] Decide folder structure and naming convention
-- [ ] Decide initial set of technologies to cover (e.g. Python, C++, TypeScript, ...)
-- [ ] Write presets — one file per technology
-- [ ] Add corresponding enum entries in `data.py` under a new `Technologies` class
-- [ ] Extend `PromptBuilder` to handle technology selections
+- [x] Folder structure: `languages/`, `frontend/`, `backend/`, `databases/`, `mobile/`
+- [x] 28 preset files written (15 languages, 6 frontend, 3 backend, 2 databases, 1 mobile)
+- [x] `Technologies` class added to `data.py` with 5 nested Enum sub-classes and `get_all()`
+- [x] `PromptBuilder.add_technology()` added; `build()` emits "Technology best practices:" section
+- [x] `gui.py` updated — Technologies section rendered in column 1 below Behaviours with a spacer gap
 
-**Alignment needed:** Agree on tech list and folder structure before writing content.
+---
+
+### Step 5b — GUI Redesign
+**Status:** ✅ Done
+
+- [x] 5-column layout for `left_frame`: Col 0 Roles | Col 1 Technologies | Col 2 Thinking | Col 3 Behaviours | Col 4 ResponseLength + UserInteraction + AdviceTypes
+- [x] `create_column4_buttons()` replaces three separate methods; stacks radio sections with spacers
+- [x] "Copy to Clipboard" moved to `right_frame` row 1, `sticky="e"`
+- [x] All three footer buttons standardised to `width=22`
+- [x] Textbox height increased to 48
+- [x] Theme toggle kept at `left_frame` col 0 row 100
+
+---
+
+### Step 5c — Special Prompts Feature
+**Status:** ✅ Done
+
+New `presets/special_prompts/` directory for standalone prompts that must not concatenate with checkbox selections.
+
+- [x] `SpecialPrompts` enum added to `data.py` with `get_all()` and `get_path()`
+- [x] "Build Special Prompt" button added to col 3 row 100 in `gui.py`
+- [x] `open_special_prompt_popup()` — modal `tk.Toplevel`, theme-aware bg, radio buttons iterate enum, "Load Prompt" writes file content directly to textbox
+- [x] 7 prompts written and wired: `reasoning_engine`, `future_vision_guide`, `prompt_creator`, `writing_assistant`, `sentence_decomposer`, `introspection_interviewer`, `opportunity_gap_cartographer`
+
+---
+
+### Step 5d — Writing Assistant Prompt Refinement
+**Status:** ✅ Done
+
+- [x] Added `# PROSE STYLE` section — 8 behavioral rules covering sentence rhythm, subordination preference, passive voice frequency, deliberate vocabulary repetition, thematic echo, metaphor discipline, alliteration pruning, paragraph cohesion
+- [x] Added `# LANGUAGE RESTRICTIONS` section — prohibits AI buzzwords, hedging qualifiers, decorative punctuation, fabricated citations
+- [x] Contrastive rhetoric rule strengthened with explicit raise-to-dismiss pattern diagnosis and full banned-phrase list including AI-specific reframe constructions ("This is not just about X, it's Y", etc.)
 
 ---
 
