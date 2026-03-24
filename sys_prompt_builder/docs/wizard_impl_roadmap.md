@@ -144,11 +144,11 @@ New `presets/special_prompts/` directory for standalone prompts that must not co
 ---
 
 ### Step 6 — Wizard Implementation
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
 See `docs/wizard_flow.md` for the full UX design.
 
-**Confirmed flow:**
+**Flow implemented:**
 ```
 Welcome
   └─► Use Case (multi-select, ≥1 required)
@@ -168,11 +168,18 @@ Welcome
         S6 Export
 ```
 
-- [ ] Install `textual` dependency — add to `requirements.txt`
-- [ ] Implement `src/wizard.py` — multi-screen Textual app
-- [ ] Implement `launcher_wizard.bat`
+- [x] Install `textual>=8.1.1` — added to `requirements.txt`
+- [x] Implement `src/wizard.py` — 17-screen Textual app (WizardApp + WizardState + CognitiveGrid widget + PromptSidebar + all screens)
+- [x] `launcher_wizard.bat` already in place (`cd /d "%~dp0src"` → `pythonw.exe wizard.py`)
 
-**Alignment needed:** ✅ `wizard_flow.md` finalised — ready to implement.
+**Architecture notes:**
+- `WizardApp` holds `WizardState` dataclass and a `deque` screen queue
+- `build_screen_queue()` computes the ordered screen sequence from use-case selections
+- `advance()` pops the next class from the queue and pushes it
+- `A5GuardrailsScreen` auto-skips on mount if `project_type != "production"`
+- `S6ExportScreen` supports `.txt`, `.md`, `.json`, and clipboard; outputs to `src/output/`
+- `reset_wizard()` clears state and calls `switch_screen(WelcomeScreen())` to restart cleanly
+- `build_prompt_from_state()` free function maps `WizardState` → `PromptBuilder` calls, redirecting stdout to suppress the builder's `print()`
 
 ---
 

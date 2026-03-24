@@ -1,3 +1,3 @@
 @echo off
 cd /d "%~dp0src"
-start pythonw.exe wizard.py
+"%~dp0..\.venv\Scripts\python.exe" wizard.py

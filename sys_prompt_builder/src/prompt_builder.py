@@ -11,6 +11,7 @@ class PromptBuilder:
         self.convergent_thinking = None
         self.user_interaction = None
         self.further_instructions = []
+        self.project_context = ""
         self.prompt = ""
 
     def add_role(self, role: Roles):
@@ -44,6 +45,11 @@ class PromptBuilder:
 
     def set_user_interaction(self, interaction: UserInteraction):
         self.user_interaction = interaction
+        return self
+
+    def set_project_context(self, context: str):
+        """Set the project context block (rendered as its own section)."""
+        self.project_context = context
         return self
 
     def add_further_instructions(self, instruction: str):
@@ -101,6 +107,10 @@ class PromptBuilder:
             with open(self.user_interaction.value, "r", encoding="utf-8") as file:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
+
+        if self.project_context:
+            self.prompt += "Project context:\n"
+            self.prompt += self.project_context + "\n\n"
 
         if self.further_instructions:
             self.prompt += "Further instructions:\n"
