@@ -156,6 +156,28 @@ QPushButton#skip-btn {
     border-color: #555;
 }
 
+QPushButton#exit-btn {
+    background-color: #922424;
+    border-color: #922424;
+    color: #ffffff;
+}
+
+QPushButton#exit-btn:hover {
+    background-color: #b02c2c;
+    border-color: #b02c2c;
+}
+
+QPushButton#start-over-btn {
+    background-color: #7a5a18;
+    border-color: #7a5a18;
+    color: #ffffff;
+}
+
+QPushButton#start-over-btn:hover {
+    background-color: #9a7020;
+    border-color: #9a7020;
+}
+
 QPushButton#qt_wizard_commit_button2 {
     color: #888;
     background-color: transparent;
@@ -437,6 +459,26 @@ QPushButton#primary-btn {
 }
 QPushButton#primary-btn:hover { background-color: #106ebe; }
 QPushButton#skip-btn { color: #888; background-color: transparent; border-color: #b8b8b8; }
+
+QPushButton#exit-btn {
+    background-color: #b02c2c;
+    border-color: #b02c2c;
+    color: #ffffff;
+}
+QPushButton#exit-btn:hover {
+    background-color: #922424;
+    border-color: #922424;
+}
+
+QPushButton#start-over-btn {
+    background-color: #9a7020;
+    border-color: #9a7020;
+    color: #ffffff;
+}
+QPushButton#start-over-btn:hover {
+    background-color: #7a5a18;
+    border-color: #7a5a18;
+}
 
 QPushButton#qt_wizard_commit_button2 {
     color: #888;

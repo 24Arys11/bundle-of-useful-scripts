@@ -7,6 +7,7 @@ Contains:
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QWheelEvent
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -19,6 +20,18 @@ from PySide6.QtWidgets import (
 )
 
 from wizard_state import COGNITIVE_EXAMPLES, CONV_NAMES, DIV_NAMES
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Wheel-deaf slider  (click/drag only — wheel scroll is ignored)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class NoWheelSlider(QSlider):
+    """QSlider that ignores mouse-wheel events so scrolling a page doesn't
+    accidentally change a setting."""
+
+    def wheelEvent(self, event: QWheelEvent) -> None:  # type: ignore[override]
+        event.ignore()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -104,7 +117,7 @@ class PromptSidebar(QWidget):
         h.append(f"&nbsp;Creative: {DIV_NAMES[state.divergent_level]}")
         h.append("")
 
-        h.append(f"<b>Interaction</b>: {state.interaction.capitalize()}")
+        h.append(f"<b>Alignment</b>: {state.alignment.capitalize()}")
 
         if state.protocols:
             h.append("")
@@ -184,8 +197,8 @@ class CognitiveWidget(QWidget):
         return lbl
 
     @staticmethod
-    def _make_slider(initial: int) -> QSlider:
-        s = QSlider(Qt.Horizontal)
+    def _make_slider(initial: int) -> NoWheelSlider:
+        s = NoWheelSlider(Qt.Horizontal)
         s.setRange(0, 4)
         s.setValue(initial)
         s.setTickInterval(1)

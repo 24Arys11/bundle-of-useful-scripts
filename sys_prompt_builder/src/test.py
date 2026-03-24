@@ -1,5 +1,5 @@
 from prompt_builder import PromptBuilder
-from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserInteraction
+from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserAlignment
 
 prompt_builder = PromptBuilder()
 
@@ -22,8 +22,8 @@ prompt_builder.set_convergent_thinking(Thinking.Convergent.HIGH)
 # Set divergent thinking
 prompt_builder.set_divergent_thinking(Thinking.Divergent.MEDIUM)
 
-# Set user interaction
-prompt_builder.set_user_interaction(UserInteraction.HIGH)
+# Set user alignment
+prompt_builder.set_user_alignment(UserAlignment.HIGH)
 
 # Add further instructions
 prompt_builder.add_further_instructions("Be respectful to others.")

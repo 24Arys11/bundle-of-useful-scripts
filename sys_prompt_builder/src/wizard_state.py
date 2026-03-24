@@ -14,7 +14,7 @@ from data import (
     Roles,
     Technologies,
     Thinking,
-    UserInteraction,
+    UserAlignment,
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -113,11 +113,11 @@ GUARDRAIL_INSTRUCTION: dict[str, str] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Interaction level names  (used for slider labels)
+# Alignment level names  (used for slider labels)
 # ─────────────────────────────────────────────────────────────────────────────
 
-INTERACTION_NAMES = ["Minimal", "Low", "Medium", "High", "Babysitter"]
-INTERACTION_KEYS  = ["MINIMAL", "LOW", "MEDIUM", "HIGH", "BABYSITTER"]
+ALIGNMENT_NAMES = ["Minimal", "Low", "Medium", "High", "Maximum"]
+ALIGNMENT_KEYS  = ["MINIMAL", "LOW", "MEDIUM", "HIGH", "MAXIMUM"]
 
 RESPONSE_NAMES = ["Minimal", "Low", "Medium", "High", "Storyteller"]
 RESPONSE_KEYS  = ["MINIMAL", "LOW", "MEDIUM", "HIGH", "STORY_TELLER"]
@@ -291,7 +291,7 @@ class WizardState:
     divergent_level:  int = 2  # index into DIV_LEVELS  (0-4)
 
     # ── Shared S2 — Communication ───────────────────────────────────────────
-    interaction:          str = "HIGH"      # UserInteraction enum name
+    alignment:          str = "HIGH"      # UserAlignment enum name
     response_length:      str = "LOW"       # ResponseLength enum name
     advice:               str = "BALLANCED" # AdviceType enum name
     language_restriction: str = ""
@@ -318,11 +318,11 @@ class WizardState:
     def divergent(self) -> Thinking.Divergent:
         return DIV_LEVELS[self.divergent_level]
 
-    def user_interaction_enum(self) -> UserInteraction:
+    def user_alignment_enum(self) -> UserAlignment:
         try:
-            return UserInteraction[self.interaction]
+            return UserAlignment[self.alignment]
         except KeyError:
-            return UserInteraction.MEDIUM
+            return UserAlignment.MEDIUM
 
     def response_length_enum(self):
         from data import ResponseLength

@@ -1,10 +1,24 @@
-# Wizard UX Flow
+﻿# Wizard UX Flow
 
-Decision-tree survey design for the Textual-based prompt wizard (`wizard.py`).  
-Each page maps to one Textual `Screen`. The user answers questions about their needs — the wizard maps answers to roles, presets and instructions behind the scenes.
+Decision-tree survey design for the PySide6 prompt wizard (`wizard.py`).  
+Each page is a `QWizardPage` subclass. The user answers questions â€” the wizard maps answers to roles, presets, and instructions behind the scenes.
 
-**Target audience:** Beginners who want a tailored prompt without prompt engineering knowledge.  
-**Developer control panel:** The existing `gui.py` (launched via `launcher.bat`) remains for power users.
+**Target audience:** Anyone who wants a tailored system prompt without prompt engineering knowledge.  
+**Developer control panel:** `gui.py` (launched via `launcher.bat`) remains for power users who want full manual control.
+
+---
+
+## Architecture Overview
+
+| File | Responsibility |
+|---|---|
+| `wizard_state.py` | `WizardState` dataclass + all constants (enum lists, preset options) |
+| `wizard_prompt.py` | `build_prompt_from_state()` â€” maps state â†’ PromptBuilder calls |
+| `wizard_widgets.py` | `PromptSidebar`, `CognitiveWidget`, `NoWheelSlider` |
+| `wizard_screens.py` | All `QWizardPage` classes + `PromptWizard` + `ExportDialog` |
+| `wizard.py` | `WizardApp` (QMainWindow), QSS themes, entry point |
+
+`PromptWizard` is a `QWizard` (ModernStyle) embedded in `WizardApp` alongside a live `PromptSidebar`. The sidebar is injected into the wizard and refreshed after each page commit.
 
 ---
 
@@ -12,381 +26,183 @@ Each page maps to one Textual `Screen`. The user answers questions about their n
 
 ```
 Welcome
-  └─► Use Case (multi-select, ≥1 required)
-        │
-        ├─► [Software Development selected]
-        │     A1  What kind of help?          (multi-select, all pre-selected)
-        │     A2  Technologies                (multi-select from available presets)
-        │     A3  Project type               (script / hobby / production)
-        │     A4  Project information        (free text: architecture, stack, patterns)
-        │    [A5  Production guardrails]      (only if Production selected in A3)
-        │
-        ├─► [Learning & Teaching selected]
-        │     B1  Teaching style
-        │
-        ├─► [Coaching & Growth selected]
-        │     C1  Coach expertise             (multi-select)
-        │
-        ├─► [Research & Analysis selected]
-        │     (silent — Researcher role added, no page shown)
-        │
-        ├─► [Creative Work selected]
-        │     E1  Creative type
-        │
-        └─► [Professional / Business selected]
+  â””â”€â–º Use Case (multi-select, â‰¥1 required)
+        â”‚
+        â”œâ”€â–º [Software Development selected]
+        â”‚     A1  What kind of help?        (multi-select, all pre-selected)
+        â”‚     A2  Technologies              (multi-select)          [skippable]
+        â”‚     A3  Project type             (script / hobby / production)
+        â”‚     A4  Project information      (free text + file import) [skippable]
+        â”‚    [A5  Production guardrails]   (only if Production in A3) [skippable]
+        â”‚
+        â”œâ”€â–º [Learning & Teaching selected]
+        â”‚     B1  Teaching style + technologies
+        â”‚
+        â”œâ”€â–º [Coaching & Growth selected]
+        â”‚     C1  Coach expertise
+        â”‚
+        â”œâ”€â–º [Research & Analysis selected]
+        â”‚     (silent â€” Researcher role added, no page shown)
+        â”‚
+        â”œâ”€â–º [Creative Work selected]
+        â”‚     E1  Creative type
+        â”‚
+        â””â”€â–º [Professional / Business selected]
               F1  Business domain
-                    │
-                    ▼  (all branches converge — always shown)
-              S1  Cognitive Profile           (5×5 grid)
-              S2  Communication Preferences
-              S3  Protocols                   (optional)
-              S4  Custom Instructions         (optional)
-              S5  Preview
-              S6  Export
+                    â”‚
+                    â–¼  (all branches converge â€” always shown)
+              S1  Thinking & Communication Style
+              S3  Protocols                   (optional) [skippable]
+              S4  Custom Instructions         (optional) [skippable]
+              S5  Preview + Export
 ```
+
+> **Note:** S2 and S6 from earlier designs are removed. S1 absorbs communication/behavioral content; export is handled by a dialog popup on S5.
 
 ---
 
 ## Persistent Sidebar (all pages)
 
-A narrow right-hand panel shows a live summary of what has been collected so far:
+A 290px fixed-width panel on the right shows a live HTML summary:
 
 ```
-┌─── Your Prompt So Far ──────┐
-│ Use cases:                  │
-│   • Software Development    │
-│   • Research & Analysis     │
-│                             │
-│ Roles:                      │
-│   • Software Engineer       │
-│   • System Architect        │
-│   • Researcher              │
-│                             │
-│ Technologies:               │
-│   • Python, C++             │
-│                             │
-│ Project: Production         │
-│ Cognitive: Med / High       │
-│ Interaction: Medium         │
-└─────────────────────────────┘
+â”Œâ”€â”€â”€ Prompt Summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Use cases:                  â”‚
+â”‚   â€¢ Software Dev            â”‚
+â”‚   â€¢ Research                â”‚
+â”‚                             â”‚
+â”‚ Roles:                      â”‚
+â”‚   â€¢ Software Engineer       â”‚
+â”‚   â€¢ System Architect        â”‚
+â”‚   â€¢ Researcher              â”‚
+â”‚                             â”‚
+â”‚ Technologies:               â”‚
+â”‚   Python, TypeScript        â”‚
+â”‚                             â”‚
+â”‚ Project type: Production    â”‚
+â”‚ Analytical: High            â”‚
+â”‚ Creative: Medium            â”‚
+â”‚ Interaction: High           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
-Updates reactively after every selection.
+Refreshes after every page commit and on Back navigation.
 
 ---
 
-## Page 1 — Welcome
+## Global Controls
 
-**Purpose:** Orient the user. No selections made here.
+| Button | Location | Action |
+|---|---|---|
+| `â†º Start Over` | far left | Resets `WizardState` to defaults; restarts from Welcome |
+| `Skip â†’` | right of Back | Advances without committing state (skippable pages only) |
+| `â† Back` | standard | Returns to previous page |
+| `Next â†’` | standard | Commits state and advances |
+| `âœ“ Export` | final page only | Opens `ExportDialog` |
+| `Exit` | far left | Closes the application |
+| `â˜€ Light theme` / `ðŸŒ™ Dark theme` | top-right overlay | Toggles QSS theme |
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                                                          │
-│   Sys Prompt Wizard                                      │
-│                                                          │
-│   Build a tailored AI system prompt by answering a       │
-│   few simple questions about what you need.              │
-│                                                          │
-│   You don't need any prompt engineering knowledge.       │
-│   The wizard handles the rest.                           │
-│                                                          │
-│                      [  Start  ]                         │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
-```
-
-**Footer:** `Ctrl+Q  Quit`
+Skippable pages: A2, A4, A5, S3, S4.
 
 ---
 
-## Page 2 — Use Case Selection
+## Page 0 â€” Welcome
 
-**Purpose:** Determine which branch pages to show. At least one required.
-
-```
-┌──────────────── What do you need? ──────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  What do you want to use this AI assistant for? │  Use cases: (none)     │
-│  Select all that apply.                         │                        │
-│                                                 │                        │
-│  ☐  Software Development                        │                        │
-│     Write, design, review or learn code         │                        │
-│                                                 │                        │
-│  ☐  Learning & Teaching                         │                        │
-│     Understand a topic or technology            │                        │
-│                                                 │                        │
-│  ☐  Coaching & Growth                           │                        │
-│     Career, accountability, habits, wellbeing   │                        │
-│                                                 │                        │
-│  ☐  Research & Analysis                         │                        │
-│     Deep-dive into topics or documents          │                        │
-│                                                 │                        │
-│  ☐  Creative Work                               │                        │
-│     Writing, stories, scripts, ideas            │                        │
-│                                                 │                        │
-│  ☐  Professional / Business                     │                        │
-│     Strategy, finance, legal, marketing         │                        │
-│                                                 │                        │
-│  [← Back]                          [Next →]     │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widget:** `SelectionList`  
-**Validation:** At least one selection required. Shows inline warning if empty and Next is pressed.  
-**Research & Analysis note:** No branch page is shown — the Researcher role is silently added to state.
-
-| Use Case | Description | Branch pages |
-| --- | --- | --- |
-| Software Development | Write, design, review or learn code | A1 → A2 → A3 → A4 → [A5] |
-| Learning & Teaching | Understand a topic or technology | B1 |
-| Coaching & Growth | Career, accountability, habits, wellbeing | C1 |
-| Research & Analysis | Deep-dive into topics or documents | *(silent — Researcher role added)* |
-| Creative Work | Writing, stories, scripts, ideas | E1 |
-| Professional / Business | Strategy, finance, legal, marketing | F1 |
+No selections. Orients the user with a brief description of what the wizard produces.
 
 ---
 
-## Branch A — Software Development
+## Page 1 â€” Use Case Selection
 
-### Page A1 — What kind of help?
+**Widget:** `QListWidget` (checkboxes, multi-select)  
+**Validation:** At least one required.
 
-**Purpose:** Determine which roles to activate. All pre-selected by default.
+| Use Case | Branch | Roles silently added |
+|---|---|---|
+| Software Development | A1 â†’ A2 â†’ A3 â†’ A4 â†’ [A5] | depends on A1 |
+| Learning & Teaching | B1 | Teacher (+ Socratic Guide if style = Socratic) |
+| Coaching & Growth | C1 | depends on C1 |
+| Research & Analysis | *(none)* | Researcher |
+| Creative Work | E1 | depends on E1 |
+| Professional / Business | F1 | depends on F1 |
 
-```
-┌──────── Software Development — Help Type ───────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  What do you need help with?                    │  Use cases:            │
-│  Deselect anything that doesn't apply.          │   • Software Dev       │
-│                                                 │                        │
-│  ☑  Write / implement code                      │  Roles:                │
-│  ☑  Design the architecture                     │   • Software Engineer  │
-│  ☑  Research docs, repos, APIs                  │   • System Architect   │
-│  ☑  Teach me while we build                     │   • Researcher         │
-│  ☑  Review and critique my code                 │   • Teacher            │
-│                                                 │                        │
-│  [← Back]                          [Next →]     │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
+---
 
-**Widget:** `SelectionList` (all items checked on mount)
+## Branch A â€” Software Development
 
-| Selection | Role(s) added |
-| --- | --- |
+### A1 â€” What kind of help?
+
+All items pre-checked by default. Deselect anything that doesn't apply.
+
+| Selection | Role added |
+|---|---|
 | Write / implement code | `Software Engineer` |
 | Design the architecture | `Software System Architect` |
 | Research docs, repos, APIs | `Researcher` |
 | Teach me while we build | `Teacher` |
-| Review and critique my code | `Software Engineer` *(if not already added)* |
+| Review and critique my code | `Software Engineer` |
+
+### A2 â€” Technologies *(skippable)*
+
+`QListWidget` with all available technology presets from `TECH_OPTIONS`. Each checked item appends `presets/technologies/<lang>.txt`.
+
+### A3 â€” Project Type
+
+`QButtonGroup` (radio). Drives engineering rigour.
+
+| Value | Instruction injected |
+|---|---|
+| `script` | Pragmatic, minimal â€” no test boilerplate unless asked |
+| `hobby` | Encourage structure and tests, no strict coverage |
+| `production` | Full rigour: tests required, incremental changes, alignment before deviating â€” **unlocks A5** |
+
+### A4 â€” Project Information *(skippable)*
+
+`ProjectInfoEdit` â€” a drag-and-drop `QPlainTextEdit` that accepts `.txt`/`.md` file drops. Buttons for file import and an **Inspection Helper** dialog.
+
+**Inspection Helper** generates a ready-to-paste IDE agent prompt:
+> *"Analyze this project very thoroughly, sample a significant number of files to figure out patterns and produce a concise, technical description covering: purpose, stack, architecture, modules, conventions, dependencies, design decisions, and common patterns. (about 500 words)"*
+
+**Output in prompt:** Content renders as a dedicated `Project context:` section (not a list entry).
+
+### A5 â€” Production Guardrails *(production only, skippable)*
+
+All items pre-checked by default. Each checked item adds a guardrail instruction.
+
+| Guardrail | Key |
+|---|---|
+| Confirm before destructive changes | `confirm_destructive` |
+| Prefer reversible operations | `prefer_reversible` |
+| Flag design deviations | `flag_deviations` |
+| Never guess requirements | `no_guessing` |
+| Propose test strategy alongside every implementation | `propose_tests` |
+
+A free-text `QLineEdit` allows adding a custom guardrail.
 
 ---
 
-### Page A2 — Technologies
+## Branch B â€” Learning & Teaching
 
-**Purpose:** Add language/framework-specific best practice presets.
+### B1 â€” Teaching Style
 
-```
-┌──────── Software Development — Technologies ────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  Which technologies are involved?               │  Technologies: (none)  │
-│  Select all that apply.                         │                        │
-│                                                 │                        │
-│  ☐  Python                                      │                        │
-│  ☐  C++                                         │                        │
-│  ☐  TypeScript                                  │                        │
-│  ☐  Go                                          │                        │
-│  ☐  Rust                                        │                        │
-│  ☐  Java                                        │                        │
-│  ☐  C#                                          │                        │
-│  ☐  SQL                                         │                        │
-│                                                 │                        │
-│  (Only technologies with available presets are  │                        │
-│   shown. Use Custom Instructions for anything   │                        │
-│   not listed.)                                  │                        │
-│                                                 │                        │
-│  [← Back]                   [Skip]  [Next →]    │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
+`QButtonGroup` (radio) + technology checklist (same as A2).
 
-**Widget:** `SelectionList`  
-**Skip:** Allowed.  
-**Effect:** Each selected technology appends the corresponding `presets/technologies/<lang>.txt`.
-
-| Technology | Preset file |
-| --- | --- |
-| Python | `presets/technologies/python.txt` |
-| C++ | `presets/technologies/cpp.txt` |
-| TypeScript | `presets/technologies/typescript.txt` |
-| Go | `presets/technologies/go.txt` |
-| Rust | `presets/technologies/rust.txt` |
-| Java | `presets/technologies/java.txt` |
-| C# | `presets/technologies/csharp.txt` |
-| SQL | `presets/technologies/sql.txt` |
-
----
-
-### Page A3 — Project Type
-
-**Purpose:** Set overall engineering rigour. Drives test, review and caution instructions.
-
-```
-┌──────── Software Development — Project Type ────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  What kind of project is this?                  │  Project: (none)       │
-│                                                 │                        │
-│  ○  Quick script                                │                        │
-│     Pragmatic. No test boilerplate.             │                        │
-│     Get it working, keep it simple.             │                        │
-│                                                 │                        │
-│  ○  Hobby / Personal project                    │                        │
-│     Some structure. Tests welcome               │                        │
-│     but no strict coverage targets.             │                        │
-│                                                 │                        │
-│  ○  Production grade                            │                        │
-│     Full rigour. Tests required.                │                        │
-│     Small safe changes. Extra guardrails page   │                        │
-│     follows.                                    │                        │
-│                                                 │                        │
-│  [← Back]                          [Next →]     │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widget:** `RadioSet`  
-**Validation:** One option required.  
-**Effect — Script:** Adds instruction: *"Keep solutions pragmatic and minimal. Do not add test boilerplate unless asked."*  
-**Effect — Hobby:** Adds instruction: *"Encourage good structure and tests, but without strict coverage requirements."*  
-**Effect — Production:** Adds instruction: *"Apply full engineering rigour: tests required, careful incremental changes, seek alignment before deviating from agreed design."* → unlocks Page A5.
-
----
-
-### Page A4 — Project Information
-
-**Purpose:** Inject context about the specific project into the prompt.
-
-```
-┌──────── Software Development — Project Info ────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  Describe your project (optional).              │                        │
-│                                                 │                        │
-│  Include anything relevant: architecture,       │                        │
-│  tech stack, patterns, constraints, team        │                        │
-│  conventions, coding standards, etc.            │                        │
-│                                                 │                        │
-│ ┌─────────────────────────────────────────────┐ │                        │
-│ │ e.g. "FastAPI backend, PostgreSQL, layered  │ │                        │
-│ │ architecture (domain / service / repo),     │ │                        │
-│ │ async throughout, pytest for tests."        │ │                        │
-│ │                                             │ │                        │
-│ └─────────────────────────────────────────────┘ │                        │
-│                                                 │                        │
-│  [← Back]                   [Skip]  [Next →]    │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widget:** `TextArea` (multi-line, optional)  
-**Effect:** Content appended under a `Project context:` heading in the prompt.
-
----
-
-### Page A5 — Production Guardrails *(only if Production selected in A3)*
-
-**Purpose:** Let the user opt into specific safety/process guardrails for production work.
-
-```
-┌──────── Software Development — Guardrails ──────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  Additional production guardrails (optional).   │                        │
-│  Check those that apply to your project.        │                        │
-│                                                 │                        │
-│  ☐  Ask for confirmation before destructive     │                        │
-│     changes (deletes, drops, rewrites)          │                        │
-│                                                 │                        │
-│  ☐  Prefer reversible operations where possible │                        │
-│                                                 │                        │
-│  ☐  Flag any deviation from the agreed design   │                        │
-│     before implementing it                      │                        │
-│                                                 │                        │
-│  ☐  Never guess a requirement — ask instead     │                        │
-│                                                 │                        │
-│  ☐  Always propose a test strategy alongside    │                        │
-│     each implementation                         │                        │
-│                                                 │                        │
-│  [ + Add a custom guardrail... ]                │                        │
-│                                                 │                        │
-│  [← Back]                   [Skip]  [Next →]    │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widget:** `SelectionList` + inline `Input` that appends to the list on confirm  
-**Effect:** Each checked item becomes a protocol entry: `In the scenario [X], follow this protocol: [Y]`
-
-| Guardrail | Scenario injected |
-| --- | --- |
-| Confirm before destructive changes | Before deletes, drops, or full rewrites |
-| Prefer reversible operations | When multiple approaches are available |
-| Flag design deviations | When about to deviate from the agreed design |
-| Never guess requirements | When a requirement is ambiguous or missing |
-| Propose test strategy | Alongside every new implementation |
-
----
-
-## Branch B — Learning & Teaching
-
-### Page B1 — Teaching Style
-
-```
-┌──────── Learning & Teaching ────────────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  How should the AI teach you?                   │  Roles: Teacher        │
-│                                                 │                        │
-│  ◉  Direct explanation                          │                        │
-│     Clear, complete explanations of each topic  │                        │
-│                                                 │                        │
-│  ○  Socratic                                    │                        │
-│     Guide me to the answer with questions       │                        │
-│                                                 │                        │
-│  ○  Example-driven                              │                        │
-│     Show me first, then explain                 │                        │
-│                                                 │                        │
-│  Any specific technology you're learning?       │                        │
-│  (same list as A2 — adds the same presets)      │                        │
-│  ☐ Python  ☐ C++  ☐ TypeScript  ☐ ...          │                        │
-│                                                 │                        │
-│  [← Back]                          [Next →]     │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-| Teaching style | Role(s) added |
-| --- | --- |
+| Style | Roles added |
+|---|---|
 | Direct explanation | `Teacher` |
 | Socratic | `Teacher` + `Socratic Guide` |
 | Example-driven | `Teacher` |
 
 ---
 
-## Branch C — Coaching & Growth
+## Branch C â€” Coaching & Growth
 
-### Page C1 — Coach Expertise
+### C1 â€” Coach Expertise
 
-```
-┌──────── Coaching & Growth ──────────────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  What expertise should your coach have?         │  Roles: (none yet)     │
-│  Select all that apply.                         │                        │
-│                                                 │                        │
-│  ☐  Career & professional development           │                        │
-│  ☐  Fitness & physical health                   │                        │
-│  ☐  Mental wellness & emotional support         │                        │
-│  ☐  Accountability & habit building             │                        │
-│                                                 │                        │
-│  [← Back]                          [Next →]     │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
+`QListWidget` (multi-select). At least one required.
 
-**Widget:** `SelectionList`  
-**Validation:** At least one required.
-
-| Expertise | Role preset |
-| --- | --- |
+| Expertise | Role |
+|---|---|
 | Career & professional development | `Growth & Accountability Coach` |
 | Fitness & physical health | `Fitness Coach` |
 | Mental wellness & emotional support | `Mental Wellness Advisor` |
@@ -394,347 +210,216 @@ Updates reactively after every selection.
 
 ---
 
-## Branch E — Creative Work
+## Branch E â€” Creative Work
 
-### Page E1 — Creative Type
+### E1 â€” Creative Type
 
-```
-┌──────── Creative Work ──────────────────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  What kind of creative work?                    │                        │
-│                                                 │                        │
-│  ○  Storytelling / Fiction                      │                        │
-│  ○  Poetry                                      │                        │
-│  ○  Screenwriting                               │                        │
-│  ○  World-building / Lore                       │                        │
-│  ○  Copywriting / Marketing                     │                        │
-│                                                 │                        │
-│  [← Back]                          [Next →]     │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widget:** `RadioSet`
+`QButtonGroup` â†’ one of: Storytelling/Fiction, Poetry, Screenwriting, World-building, Copywriting.
 
 ---
 
-## Branch F — Professional / Business
+## Branch F â€” Professional / Business
 
-### Page F1 — Business Domain
+### F1 â€” Business Domain
 
-```
-┌──────── Professional / Business ────────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  What domain?                                   │                        │
-│                                                 │                        │
-│  ○  Business strategy                           │                        │
-│  ○  Finance & investment                        │                        │
-│  ○  Legal                                       │                        │
-│  ○  Marketing & brand                           │                        │
-│                                                 │                        │
-│  [← Back]                          [Next →]     │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widget:** `RadioSet`
+`QButtonGroup` â†’ one of: Business strategy, Finance & investment, Legal, Marketing & brand.
 
 ---
 
-## Shared Pages (always shown, regardless of use cases)
+## Shared Pages
 
 ---
 
-### Page S1 — Cognitive Profile
+### S1 â€” Thinking & Communication Style
 
-**Purpose:** Set both convergent (analytical depth) and divergent (creativity) thinking with a single click on an interactive grid.
+Single merged page (scrollable) covering cognitive profile, response length, user alignment, advice style, and behavioral policies.
 
-```
-┌──────── Cognitive Profile ──────────────────────────────────────────────┐
-│                                                                         │
-│  How should the AI think?                                               │
-│  Click the cell that best matches the responses you want.               │
-│                                                                         │
-│  Example question: "How would you reduce latency in a                   │
-│  distributed system?"                                                   │
-│                                                                         │
-│              ◄──────────── Analytical depth ────────────►              │
-│              Minimal      Low      Medium     High      Max             │
-│  ▲  Max    [ Imaginat. ][ Wild  ][ Vision- ][ Vision ][ Visionary]     │
-│  C         [ leap     ][ ideas ][ ary+str ][+rigour ][+exhausti.]      │
-│  r                                                                      │
-│  e  High   [ Creative ][ Ideas ][ Innovat.][ Innov. ][ Innovat. ]      │
-│  a         [ only     ][ +some ][ +struct][+deep   ][+thorough ]       │
-│  t                                                                      │
-│  i  Medium [ Simple   ][ Clear ][★ Balanc][Thorough][ Rigorous ]      │
-│  v         [ take     ][ conci-][ ed ★   ][        ][ +grounded]      │
-│  i         [          ][ se    ][        ][        ][          ]       │
-│  t                                                                      │
-│  y  Low    [ Blunt    ][ Terse ][ Solid  ][ Solid  ][ Precise  ]      │
-│  │         [          ][       ][        ][ +refs  ][ +thorough]      │
-│  │                                                                      │
-│  ▼  Min    [ One word ][ Brief ][ Short  ][ Concise][ Dense    ]      │
-│            [          ][       ][ factual][ +ref   ][ factual  ]      │
-│                                                                         │
-│  Selected: Medium creativity / Medium analytical depth  (★ default)    │
-│                                                                         │
-│  [← Back]                                        [Next →]              │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+#### Cognitive Profile
 
-**Widget:** 5×5 grid of `Button` widgets  
-- **Columns** = Convergent levels: Minimal → Low → Medium → High → Deep Analysis  
-- **Rows** = Divergent levels: Max → High → Medium → Low → Minimal (top row = most creative)  
-- Each cell shows a 2–3 word label describing what the AI's response feels like at that combination  
-- Clicking a cell selects it (highlighted); previous selection is cleared  
-- Default: centre cell Medium/Medium (marked ★)  
-- A plain-English summary line below the grid updates on every click  
+Two `NoWheelSlider` instances (0â€“4 range, tick labels, click/drag only â€” no mouse wheel).
 
-**Effect:** Sets both `convergent_thinking` and `divergent_thinking` in `WizardState`.
+| Slider | Labels | Default |
+|---|---|---|
+| Analytical depth | Minimal / Low / Medium / High / Deep | High (3) |
+| Creative divergence | Minimal / Low / Medium / High / Max | Medium (2) |
 
-| | Minimal | Low | Medium | High | Deep Analysis |
-| --- | --- | --- | --- | --- | --- |
-| **Max creativity** | Imaginative leap | Wild ideas | Visionary + structure | Vision + rigour | Visionary + exhaustive |
-| **High creativity** | Creative only | Ideas + some | Innovative + struct | Innovative + deep | Innovative + thorough |
-| **Medium creativity** | Simple take | Clear, concise | ★ **Balanced** | Thorough | Rigorous + grounded |
-| **Low creativity** | Blunt | Terse | Solid | Solid + refs | Precise + thorough |
-| **Minimal creativity** | One word | Brief | Short factual | Concise + ref | Dense factual |
+A live example text block updates as sliders move, showing a representative AI response style for the selected combination.
 
----
+#### Response Length
 
-### Page S2 — Communication Preferences
+`NoWheelSlider` (0â€“4). Maps to `ResponseLength` enum.
 
-```
-┌──────── Communication Preferences ──────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  How interactive should the AI be?              │                        │
-│                                                 │                        │
-│  ○  Minimal    — answers only, no questions     │                        │
-│  ○  Low        — asks only when truly stuck     │                        │
-│  ◉  Medium     — asks when genuinely uncertain  │                        │
-│  ○  High       — actively checks understanding  │                        │
-│  ○  Babysitter — guides every step              │                        │
-│                                                 │                        │
-│  ──────────────────────────────────────────     │                        │
-│                                                 │                        │
-│  [shown only if Coaching branch selected]       │                        │
-│  How should feedback and advice be delivered?   │                        │
-│                                                 │                        │
-│  ○  Gentle & supportive                         │                        │
-│  ◉  Balanced                                    │                        │
-│  ○  Blunt & challenging                         │                        │
-│                                                 │                        │
-│  ──────────────────────────────────────────     │                        │
-│                                                 │                        │
-│  Language / style restrictions (optional):      │                        │
-│  ┌─────────────────────────────────────────┐   │                        │
-│  │ e.g. "Always respond in formal English" │   │                        │
-│  └─────────────────────────────────────────┘   │                        │
-│                                                 │                        │
-│  [← Back]                   [Skip]  [Next →]    │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
+| Index | Label | Preset |
+|---|---|---|
+| 0 | Minimal | `1_minimal.txt` |
+| 1 | Low *(default)* | `2_low.txt` |
+| 2 | Medium | `3_medium.txt` |
+| 3 | High | `4_high.txt` |
+| 4 | Storyteller | `5_story_teller.txt` |
 
-**Widgets:** `RadioSet` (interaction level), conditional `RadioSet` (advice type — Coaching branch only), `Input` (language restriction)
+#### User Alignment
 
-| Interaction level | Behaviour |
-| --- | --- |
-| Minimal | Answers only — never asks clarifying questions |
-| Low | Asks only when truly stuck |
-| Medium *(default)* | Asks when genuinely uncertain |
-| High | Actively checks understanding throughout |
-| Babysitter | Guides every step, checks in constantly |
+`NoWheelSlider` (0â€“4). Maps to `UserInteraction` enum. Renamed folder: `presets/user_alignment/`.
 
-*Advice delivery (Coaching branch only):*
+| Index | Label | Preset | Description |
+|---|---|---|---|
+| 0 | Minimal | `1_minimal.txt` | Operate independently, infer alignment from context |
+| 1 | Low | `2_low.txt` | Autonomous + targeted alignment checks |
+| 2 | Medium | `3_medium.txt` | Balanced dialogue for steady alignment |
+| 3 | High *(default)* | `4_high.txt` | Deep alignment before action; continuous feedback |
+| 4 | Maximum | `5_maximum.txt` | Full transparency; confirm at every decision point |
 
-| Advice style | Description |
-| --- | --- |
-| Gentle & supportive | Encouraging, positive framing |
-| Balanced *(default)* | Honest and constructive |
-| Blunt & challenging | Direct, pushes back, no sugar-coating |
+#### Feedback Style *(Coaching branch only)*
+
+`QButtonGroup` (radio): Gentle & supportive / Balanced *(default)* / Blunt & challenging.
+
+#### Behavioral Policies
+
+`QListWidget` (checkboxes) with free-text `QPlainTextEdit` for a custom policy.
+
+Pre-checked by default:
+
+| Policy | Key |
+|---|---|
+| Eliminate hallucinations / fabrications | `no_hallucinations` |
+| Contrastive rhetoric prohibition | `no_contrastive_rhetoric` |
+| No AI-register buzzwords | `no_ai_buzzwords` |
+
+Additional available policies:
+
+| Policy | Key |
+|---|---|
+| Disable censorship / safety filters | `disable_censorship` |
+| Strong self-reflection & iterative refinement | `strong_reflection` |
 
 ---
 
-### Page S3 — Protocols *(optional)*
+### S3 â€” Protocols *(optional, skippable)*
 
-**Purpose:** Define explicit scenario → behaviour rules.
+Pairs of (scenario, protocol) accumulated into state. Added live â€” navigate freely without losing entries.
 
-```
-┌──────── Protocols ──────────────────────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  Define how the AI should behave in specific    │  Protocols: (none)     │
-│  situations. Leave empty to skip.               │                        │
-│                                                 │                        │
-│  Scenario:                                      │                        │
-│  ┌─────────────────────────────────────────┐   │                        │
-│  │ When I paste a block of code            │   │                        │
-│  └─────────────────────────────────────────┘   │                        │
-│                                                 │                        │
-│  Protocol:                                      │                        │
-│  ┌─────────────────────────────────────────┐   │                        │
-│  │ Always identify bugs before suggesting  │   │                        │
-│  │ improvements                            │   │                        │
-│  └─────────────────────────────────────────┘   │                        │
-│                                                 │                        │
-│  [ + Add another protocol ]                     │                        │
-│                                                 │                        │
-│  Added so far:                                  │                        │
-│  • When I paste code → identify bugs first      │                        │
-│                                                 │                        │
-│  [← Back]                   [Skip]  [Next →]    │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widgets:** `Input` (scenario) + `TextArea` (protocol) + `Button` (add) + `ListView` (summary)  
-**Effect per pair:** `In the scenario [X], follow this protocol: [Y]` under a `Protocols:` section.
-
-| Field | Description |
-| --- | --- |
-| Scenario | A short description of a situation (e.g. *"When I paste a block of code"*) |
-| Protocol | What the AI should do in that situation (multi-line, as specific as needed) |
-| Added list | Running list shown below the form; each entry can be removed before proceeding |
+**Effect per pair:** `In the scenario [X], follow this protocol: [Y]` injected as a further instruction.
 
 ---
 
-### Page S4 — Custom Instructions *(optional)*
+### S4 â€” Custom Instructions *(optional, skippable)*
 
-```
-┌──────── Custom Instructions ────────────────────┬── Your Prompt So Far ──┐
-│                                                 │                        │
-│  Anything else you want to tell the AI?         │                        │
-│  Appended as-is. Leave empty to skip.           │                        │
-│                                                 │                        │
-│ ┌─────────────────────────────────────────────┐ │                        │
-│ │                                             │ │                        │
-│ │                                             │ │                        │
-│ │                                             │ │                        │
-│ └─────────────────────────────────────────────┘ │                        │
-│                                                 │                        │
-│  [← Back]                   [Skip]  [Next →]    │                        │
-└─────────────────────────────────────────────────┴────────────────────────┘
-```
-
-**Widget:** `TextArea` (multi-line)  
-**Effect:** Each non-empty line → one `add_further_instructions()` call.
+`QPlainTextEdit` (multi-line). Each non-empty line â†’ one `add_further_instructions()` call.  
+State is **overwritten** on Next (no duplication on Back navigation).
 
 ---
 
-### Page S5 — Preview
+### S5 â€” Preview & Export
 
-**Purpose:** Show the fully assembled prompt. Read-only before export.
+`QTextBrowser` (read-only). `build_prompt_from_state()` is called on `initializePage()` and the result stored in `state.built_prompt`.
 
-```
-┌──────── Preview ────────────────────────────────────────────────────────┐
-│                                                                         │
-│  ┌───────────────────────────────────────────────────────────────────┐  │
-│  │ You occupy the following roles:                                   │  │
-│  │     - **Software Engineer**: As a professional software engineer  │  │
-│  │       you specialize in...                                        │  │
-│  │     - **Software System Architect**: ...                          │  │
-│  │                                                                   │  │
-│  │ Project context:                                                  │  │
-│  │     FastAPI backend, PostgreSQL, layered architecture...          │  │
-│  │                                                                   │  │
-│  │ Protocols:                                                        │  │
-│  │     In the scenario [I paste a block of code], follow this        │  │
-│  │     protocol: [identify bugs before suggesting improvements]      │  │
-│  │ ...                                                               │  │
-│  └───────────────────────────────────────────────────────────────────┘  │
-│                                                                         │
-│  [← Back]                                            [Export →]         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+The wizard's Finish button is relabelled **`âœ“ Export`** and styled as a primary button. Clicking it opens `ExportDialog` without closing the wizard, allowing multiple exports.
 
-**Widget:** `TextArea` (read-only, scrollable)  
-**Source:** `PromptBuilder.build()` output
+After a successful export a green success label appears:  
+`âœ“ Prompt saved successfully! You may now exit.`
 
----
+#### ExportDialog
 
-### Page S6 — Export
-
-```
-┌──────── Export ─────────────────────────────────────────────────────────┐
-│                                                                         │
-│  Choose export format(s):                                               │
-│                                                                         │
-│   ☑  Plain Text  (.txt)                                                 │
-│   ☐  Markdown    (.md)                                                  │
-│   ☐  JSON        (.json)   includes metadata: roles, settings, etc.    │
-│   ☐  Clipboard                                                          │
-│                                                                         │
-│  Filename (without extension):                                          │
-│  ┌────────────────────────────┐                                         │
-│  │ my_prompt                  │                                         │
-│  └────────────────────────────┘                                         │
-│                                                                         │
-│  Save location: src/output/                                             │
-│                                                                         │
-│  [← Back]    [✓ Export]    [Start Over]    [Quit]                       │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-**Export formats:**
+Modal popup. Format choices:
 
 | Format | Extension | Content |
-| --- | --- | --- |
-| Plain Text | `.txt` | Raw prompt text (identical to existing `output.txt`) |
-| Markdown | `.md` | Metadata header + prompt in a fenced code block |
-| JSON | `.json` | Structured: `{ "roles": [...], "technologies": [...], ..., "prompt": "..." }` |
-| Clipboard | — | Raw text via platform shell (`clip` / `xclip` / `pbcopy`) — no extra dep |
+|---|---|---|
+| Plain Text | `.txt` | Raw prompt |
+| Markdown | `.md` | YAML front-matter + prompt in fenced code block |
+| JSON | `.json` | Structured: roles, techs, settings, prompt |
+| Copy to Clipboard | â€” | Raw text via `QApplication.clipboard()` |
 
-**`Start Over`** resets all wizard state and returns to Page 1.
+File save uses `QFileDialog.getSaveFileName`. Dialog closes automatically on successful save.
 
 ---
 
-## Navigation & Global Controls
+## Prompt Structure
 
-| Action | Keyboard | Mouse |
-|---|---|---|
-| Next page | `Tab` to button + `Enter` | Click `[Next →]` |
-| Previous page | `Escape` | Click `[← Back]` |
-| Skip page | — | Click `[Skip]` (where available) |
-| Quit | `Ctrl+Q` | — |
-| Key bindings help | `F1` | — |
+Sections are emitted in this order by `PromptBuilder.build()`:
 
-**Footer** (persistent): shows current page label + available shortcuts.
+```
+You occupy the following roles:
+    <role preset content>
+
+Technology best practices:
+    <tech preset content>
+
+You must adhere to the following rules of conduct:
+    <behaviour preset content>
+
+Advice type:
+    <advice_type preset content>
+
+Response length:
+    <response_length preset content>
+
+Convergent thinking:
+    <convergent preset content>
+
+Divergent thinking:
+    <divergent preset content>
+
+User interaction:
+    <user_alignment preset content>
+
+Project context:
+    <project_info free text>
+
+Further instructions:
+    - <guardrail instructions>
+    - <custom guardrail>
+    - <protocol instructions>
+    - <extra instructions>
+    - <language restriction>
+    - <behavioral policy instructions>
+    - <custom policy>
+```
 
 ---
 
 ## State Model
 
-A single `WizardState` dataclass flows through all screens by reference:
+`WizardState` is a `@dataclass` in `wizard_state.py`. All computed values (roles list, tech list) are derived at build time in `wizard_prompt.build_prompt_from_state()` â€” the Back button can never cause stale or duplicated data.
 
 ```python
 @dataclass
 class WizardState:
-    # Use case
-    use_cases: list[str]                     # e.g. ["software_dev", "research"]
+    # Branch A
+    use_cases:           list[str]       # e.g. ["software_dev", "research"]
+    help_types:          list[str]       # A1 raw selections
+    a2_techs:            list            # A2 enum values
+    project_type:        str             # "script" | "hobby" | "production"
+    project_info:        str             # free text
+    guardrail_keys:      list[str]       # A5 keys
+    custom_guardrail:    str
 
-    # Roles (resolved from all branch answers)
-    roles: list                              # Roles enum values
+    # Branch B
+    teaching_style:      str             # "direct" | "socratic" | "examples"
+    b1_techs:            list
 
-    # Technology presets
-    technologies: list                       # Technologies enum values
+    # Branch C
+    coach_types:         list[str]
 
-    # Project (software dev branch)
-    project_type: str | None                 # "script" | "hobby" | "production" | None
-    project_info: str                        # free text
+    # Branch E / F
+    creative_type:       str
+    business_domain:     str
 
-    # Cognitive
-    convergent_thinking: Thinking.Convergent | None
-    divergent_thinking: Thinking.Divergent | None
+    # S1 â€” Cognitive
+    convergent_level:    int             # 0â€“4 index into CONV_LEVELS
+    divergent_level:     int             # 0â€“4 index into DIV_LEVELS
 
-    # Communication
-    user_interaction: UserInteraction | None
-    advice_type: AdviceType | None           # only set if Coaching branch selected
+    # S1 â€” Communication
+    interaction:         str             # UserInteraction enum name  (default: "HIGH")
+    response_length:     str             # ResponseLength enum name   (default: "LOW")
+    advice:              str             # AdviceType enum name        (default: "BALLANCED")
+    language_restriction: str
+    behavioral_policies: list[str]       # selected policy keys
+    custom_policy:       str
 
-    # Language restriction
-    language_restriction: str               # free text, empty = no restriction
-
-    # Protocols
-    protocols: list[tuple[str, str]]         # [(scenario, protocol), ...]
-
-    # Custom instructions
-    extra_instructions: list[str]
+    # S3 / S4
+    protocols:           list[tuple[str, str]]
+    extra_instructions:  list[str]
 
     # Output
-    built_prompt: str                        # populated on S5 Preview
+    built_prompt:        str
 ```

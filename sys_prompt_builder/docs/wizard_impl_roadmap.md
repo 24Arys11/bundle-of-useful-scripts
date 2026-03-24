@@ -27,6 +27,13 @@ Traceability document. Updated after every iteration. Defines what has been deci
 | 17 | Add "Build Special Prompt" feature | Some prompts are standalone and should not concatenate with checkbox selections; dedicated popup with radio select loads file directly |
 | 18 | `presets/special_prompts/` directory for standalone prompts | Separates standalone prompts from composable presets; popup iterates `SpecialPrompts` enum dynamically |
 | 19 | Writing assistant enhanced with PROSE STYLE + LANGUAGE RESTRICTIONS sections | Plain-English behavioral instructions derived from linguistic metric targets; ensures LLM output conforms to the intended prose register without seeing raw numbers |
+| 20 | Replace **Textual** with **PySide6** for the wizard | Textual (GPL) was incompatible with potential relicensing; PySide6 (LGPL) is safe. Also yields a true desktop window with native OS controls, resizing, and drag-and-drop support |
+| 21 | Merge S1 (Cognitive) + S2 (Communication) into a single `S1CogCommPage` | All thinking and communication settings are logically grouped; one page is simpler and faster for users |
+| 22 | Replace S6 Export page with `ExportDialog` modal popup | Wizard state remains intact after export — user can export multiple times without restarting; cleaner flow |
+| 23 | `project_info` renders as a dedicated `Project context:` section | Separates the user's project description from the further-instructions bullet list; cleaner rendered prompt |
+| 24 | `NoWheelSlider` wrapper around `QSlider` | Mouse wheel on a slider inside a scroll area accidentally changes values; overriding `wheelEvent` → `ignore()` fixes accidental changes |
+| 25 | Rename `presets/user_interaction/` → `presets/user_alignment/` and enum member `BABYSITTER` → `MAXIMUM` | "Alignment" better describes the intent (keeping AI and user in sync); "Maximum" is a clearer label than "Babysitter" |
+| 26 | Floating `QToolButton` overlay for theme toggle | Embedding the toggle in a top-bar strip caused layout conflicts; a child widget of the wizard window repositioned on `Resize` events sits cleanly top-right without interfering with page layout |
 
 ---
 
@@ -113,7 +120,7 @@ New preset category: `presets/technologies/` with sub-folders by category.
 ### Step 5b — GUI Redesign
 **Status:** ✅ Done
 
-- [x] 5-column layout for `left_frame`: Col 0 Roles | Col 1 Technologies | Col 2 Thinking | Col 3 Behaviours | Col 4 ResponseLength + UserInteraction + AdviceTypes
+- [x] 5-column layout for `left_frame`: Col 0 Roles | Col 1 Technologies | Col 2 Thinking | Col 3 Behaviours | Col 4 ResponseLength + UserAlignment + AdviceTypes
 - [x] `create_column4_buttons()` replaces three separate methods; stacks radio sections with spacers
 - [x] "Copy to Clipboard" moved to `right_frame` row 1, `sticky="e"`
 - [x] All three footer buttons standardised to `width=22`
@@ -148,53 +155,101 @@ New `presets/special_prompts/` directory for standalone prompts that must not co
 
 See `docs/wizard_flow.md` for the full UX design.
 
+Initially prototyped with **Textual** (TUI), then fully migrated to **PySide6** (decision #20) as the production implementation.
+
+**5-module architecture (`src/`):**
+
+| File | Responsibility |
+|---|---|
+| `wizard_state.py` | `WizardState` dataclass, all constants, enum helpers |
+| `wizard_prompt.py` | `build_prompt_from_state()` — maps state → PromptBuilder |
+| `wizard_widgets.py` | `PromptSidebar`, `CognitiveWidget`, `NoWheelSlider` |
+| `wizard_screens.py` | All `QWizardPage` subclasses + `PromptWizard` + `ExportDialog` |
+| `wizard.py` | `WizardApp` (QMainWindow), QSS themes, entry point |
+
 **Flow implemented:**
 ```
 Welcome
   └─► Use Case (multi-select, ≥1 required)
-        ↓ branch pages per selected use case, in order:
-        ├─► [Software Dev]  A1 Help types → A2 Technologies → A3 Project type → A4 Project information → [A5 Guardrails]
+        ├─► [Software Dev]  A1 → A2 → A3 → A4 → [A5 Guardrails]
         ├─► [Learning]      B1 Teaching style
         ├─► [Coaching]      C1 Coach expertise
-        ├─► [Research]      (silent — Researcher role added, no page shown)
+        ├─► [Research]      (silent — Researcher role added)
         ├─► [Creative]      E1 Creative type
         └─► [Professional]  F1 Business domain
-              ↓ always:
-        S1 Cognitive Profile (5×5 grid)
-        S2 Communication Preferences
-        S3 Protocols
-        S4 Custom Instructions
-        S5 Preview
-        S6 Export
+              ↓ (always shown)
+        S1 Thinking & Communication Style  ← merged S1+S2 (decision #21)
+        S3 Protocols                        (skippable)
+        S4 Custom Instructions              (skippable)
+        S5 Preview + Export dialog popup    ← no S6 page (decision #22)
 ```
 
-- [x] Install `textual>=8.1.1` — added to `requirements.txt`
-- [x] Implement `src/wizard.py` — 17-screen Textual app (WizardApp + WizardState + CognitiveGrid widget + PromptSidebar + all screens)
+- [x] `PySide6>=6.5` added to `requirements.txt`
+- [x] `wizard_state.py` — `WizardState` dataclass with `response_length`, `interaction`, `behavioral_policies`, `custom_policy`, `convergent_level`, `divergent_level` fields
+- [x] `wizard_widgets.py` — `CognitiveWidget` (live example preview), `NoWheelSlider` (decision #24), `PromptSidebar` (290px HTML live summary)
+- [x] `wizard_screens.py` — all branch pages + `S1CogCommPage` (merged, decision #21) + `PromptWizard` + `ExportDialog` (decision #22)
+- [x] `wizard.py` — `WizardApp` with QSS dark/light themes, floating theme toggle (decision #26), 1100×680 window
+- [x] `wizard_prompt.py` — calls `set_project_context()` (decision #23), `set_response_length()`, maps all state fields
+- [x] `prompt_builder.py` — `set_project_context()` method renders dedicated `Project context:` section
 - [x] `launcher_wizard.bat` already in place (`cd /d "%~dp0src"` → `pythonw.exe wizard.py`)
 
-**Architecture notes:**
-- `WizardApp` holds `WizardState` dataclass and a `deque` screen queue
-- `build_screen_queue()` computes the ordered screen sequence from use-case selections
-- `advance()` pops the next class from the queue and pushes it
-- `A5GuardrailsScreen` auto-skips on mount if `project_type != "production"`
-- `S6ExportScreen` supports `.txt`, `.md`, `.json`, and clipboard; outputs to `src/output/`
-- `reset_wizard()` clears state and calls `switch_screen(WelcomeScreen())` to restart cleanly
-- `build_prompt_from_state()` free function maps `WizardState` → `PromptBuilder` calls, redirecting stdout to suppress the builder's `print()`
+**Key implementation notes:**
+- Back navigation never duplicates state — all `initializePage()` calls are safe to call multiple times
+- `S1CogCommPage`: 4 groups — Cognitive Profile sliders, Response Length slider (default LOW), User Alignment slider (default HIGH), Behavioral Policies checklist (3 pre-checked by default)
+- `ExportDialog`: modal, formats txt/md/json/clipboard, closes automatically on successful save
+- `PromptWizard.nextId()` overridden to implement dynamic page ordering based on use-case selections
+- Button object names `exit-btn` / `start-over-btn` enable per-button QSS colour rules
 
 ---
 
 ### Step 7 — README Update
-**Status:** ⬜ Not Started (partial — docs links added in Step 1)
+**Status:** ✅ Done
 
-- [ ] Add Wizard section to README
-- [ ] Update GUI/CLI sections to reflect new `src/` paths
-- [ ] Document save formats (`.txt`, `.md`, `.json`, clipboard)
+- [x] Add Wizard section to README (as the recommended entry point for beginners)
+- [x] Rename "GUI Usage (Recommended)" → "GUI Usage (Developer Control Panel)"
+- [x] Fix docs links to `wizard_flow.md` and `wizard_impl_roadmap.md`
+- [x] Document export formats (`.txt`, `.md`, `.json`, clipboard) in wizard section
+- [x] Fix CLI section typos
+
+---
+
+### Step 8 — Post-Launch Refinements
+**Status:** ✅ Done
+
+Iterative UX improvements made after the initial PySide6 wizard reached working state.
+
+**Window & layout:**
+- [x] Resize default window to 1100×680 (was 1300×760)
+- [x] Set wizard minimum size to 720×520
+- [x] Theme toggle made a floating `QToolButton` child of the wizard, repositioned via `eventFilter(Resize)` (decision #26)
+
+**S1 page enhancements:**
+- [x] Response Length added as a `NoWheelSlider` (0–4, default index 1 = LOW)
+- [x] User Alignment renamed from User Interaction; slider default changed to index 3 = HIGH
+- [x] Behavioral Policies group added; 3 policies pre-checked by default (`no_hallucinations`, `no_contrastive_rhetoric`, `no_ai_buzzwords`)
+- [x] `INTERACTION_KEYS / INTERACTION_NAMES`: `"BABYSITTER"` → `"MAXIMUM"` (decision #25)
+
+**Prompt structure:**
+- [x] `project_info` rendered as dedicated `Project context:` section via `PromptBuilder.set_project_context()` (decision #23)
+- [x] Response length now injected into prompt via `set_response_length(state.response_length_enum())`
+
+**Button styles:**
+- [x] Exit button: dark red fill (`#922424` dark / `#b02c2c` light), same shape as Export button (flat, no bold)
+- [x] Start Over button: dark orange fill (`#7a5a18` dark / `#9a7020` light), same shape as Export button
+
+**Preset files:**
+- [x] Folder `presets/user_interaction/` renamed to `presets/user_alignment/`
+- [x] File `5_babysitter.txt` renamed to `5_maximum.txt`
+- [x] All 5 `user_alignment` presets rewritten with clearer language
+
+**Inspection helper prompt:**
+- [x] Updated to request thorough analysis, sample a significant number of files, list 7 aspects (added: common patterns/idioms), target ~500 words
 
 ---
 
 ## Implementation Notes
 
 - `data.py` uses **relative paths** from CWD — wizard must be launched with CWD set to `src/`
-- Textual's `Screen` push/pop model maps directly to wizard page navigation
-- `PromptBuilder` is already fully stateful — wizard just calls its methods and renders `build()` output
-- Personal presets currently live outside the enum system — wizard will offer them as a separate optional step
+- `PromptWizard.nextId()` drives dynamic page ordering; page IDs are registered at wizard construction and skipped pages just never appear in `nextId()` output
+- `PromptBuilder` is fully stateful — wizard calls its methods once and renders `build()` on S5; Back navigation never duplicates state
+- Personal presets (`personal_presets/`) live outside the enum system — they are available in the developer GUI (`gui.py`) but not yet surfaced in the wizard

@@ -42,12 +42,12 @@ from PySide6.QtWidgets import (
 
 from wizard_state import (
     TECH_OPTIONS, GUARDRAIL_OPTIONS, BEHAVIORAL_POLICY_OPTIONS,
-    INTERACTION_NAMES, INTERACTION_KEYS,
+    ALIGNMENT_NAMES, ALIGNMENT_KEYS,
     RESPONSE_NAMES, RESPONSE_KEYS,
     WizardState,
 )
 from wizard_prompt import build_prompt_from_state, export_prompt
-from wizard_widgets import CognitiveWidget
+from wizard_widgets import CognitiveWidget, NoWheelSlider
 
 
 def _read_text_with_fallback(path: Path) -> str:
@@ -728,7 +728,7 @@ class F1BusinessPage(BasePage):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class S1CogCommPage(BasePage):
-    """Merged page: cognitive sliders + interaction slider + advice + behavioral policies."""
+    """Merged page: cognitive sliders + alignment slider + advice + behavioral policies."""
 
     PAGE_ID = PAGE_S1
 
@@ -759,7 +759,7 @@ class S1CogCommPage(BasePage):
         resp_layout = QVBoxLayout(resp_group)
         resp_layout.addWidget(_hint("How verbose should the AI be?"))
         resp_layout.addLayout(self._tick_labels(RESPONSE_NAMES))
-        self._resp_slider = QSlider(Qt.Horizontal)
+        self._resp_slider = NoWheelSlider(Qt.Horizontal)
         self._resp_slider.setRange(0, 4)
         self._resp_slider.setValue(1)  # Low (default)
         self._resp_slider.setTickInterval(1)
@@ -769,12 +769,12 @@ class S1CogCommPage(BasePage):
         resp_layout.addWidget(self._resp_slider)
         root.addWidget(resp_group)
 
-        # ── Interaction slider ───────────────────────────────────────────────
-        int_group = QGroupBox("User Interaction Level")
+        # ── alignment slider ───────────────────────────────────────────────
+        int_group = QGroupBox("User Alignment Level")
         int_layout = QVBoxLayout(int_group)
         int_layout.addWidget(_hint("How interactive should the AI be?"))
-        int_layout.addLayout(self._tick_labels(INTERACTION_NAMES))
-        self._int_slider = QSlider(Qt.Horizontal)
+        int_layout.addLayout(self._tick_labels(ALIGNMENT_NAMES))
+        self._int_slider = NoWheelSlider(Qt.Horizontal)
         self._int_slider.setRange(0, 4)
         self._int_slider.setValue(3)  # High (default)
         self._int_slider.setTickInterval(1)
@@ -846,9 +846,9 @@ class S1CogCommPage(BasePage):
         # Response length slider
         rev_resp = {v: i for i, v in enumerate(RESPONSE_KEYS)}
         self._resp_slider.setValue(rev_resp.get(self.state.response_length, 1))
-        # Interaction slider
-        rev_int = {v: i for i, v in enumerate(INTERACTION_KEYS)}
-        self._int_slider.setValue(rev_int.get(self.state.interaction, 3))
+        # alignment slider
+        rev_int = {v: i for i, v in enumerate(ALIGNMENT_KEYS)}
+        self._int_slider.setValue(rev_int.get(self.state.alignment, 3))
         # Advice
         rev_adv = {v: k for k, v in self._ADV_MAP.items()}
         self._adv_grp.button(rev_adv.get(self.state.advice, 1)).setChecked(True)
@@ -861,7 +861,7 @@ class S1CogCommPage(BasePage):
         self.state.convergent_level    = self._cog_widget.conv_level
         self.state.divergent_level     = self._cog_widget.div_level
         self.state.response_length     = RESPONSE_KEYS[self._resp_slider.value()]
-        self.state.interaction         = INTERACTION_KEYS[self._int_slider.value()]
+        self.state.alignment         = ALIGNMENT_KEYS[self._int_slider.value()]
         self.state.advice              = self._ADV_MAP.get(self._adv_grp.checkedId(), "BALLANCED")
         self.state.behavioral_policies = _get_checked(self._policy_list)
         self.state.custom_policy       = self._custom_policy.toPlainText().strip()
@@ -1071,7 +1071,7 @@ class ExportDialog(QDialog):
             "project_info": self._state.project_info,
             "convergent_thinking": self._state.convergent().name,
             "divergent_thinking": self._state.divergent().name,
-            "user_interaction": self._state.interaction,
+            "user_alignment": self._state.alignment,
             "advice_type": self._state.advice if self._state.coaching_selected else None,
             "behavioral_policies": self._state.behavioral_policies,
             "custom_policy": self._state.custom_policy,
@@ -1201,10 +1201,14 @@ class PromptWizard(QWizard):
         # Connect custom buttons directly (more reliable than customButtonClicked signal)
         start_over_btn = self.button(QWizard.CustomButton1)
         if start_over_btn:
+            start_over_btn.setObjectName("start-over-btn")
             start_over_btn.clicked.connect(self._on_start_over)
         skip_btn = self.button(QWizard.CustomButton2)
         if skip_btn:
             skip_btn.clicked.connect(self._on_skip)
+        exit_btn = self.button(QWizard.CancelButton)
+        if exit_btn:
+            exit_btn.setObjectName("exit-btn")
 
     # ── Skippable pages ─────────────────────────────────────────────────────
 

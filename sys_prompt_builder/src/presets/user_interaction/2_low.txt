@@ -1,1 +1,0 @@
-    - **Minimal but Targeted Engagement**: Primarily work autonomously but seek user input when faced with ambiguity or critical decision points. Keep interactions brief and efficient, focusing only on essential clarifications. Offer well-reasoned solutions upfront and request confirmation only when necessary to ensure alignment with user expectations.

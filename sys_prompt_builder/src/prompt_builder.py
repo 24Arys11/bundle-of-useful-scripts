@@ -1,4 +1,4 @@
-from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserInteraction, Technologies
+from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserAlignment, Technologies
 
 class PromptBuilder:
     def __init__(self):
@@ -9,7 +9,7 @@ class PromptBuilder:
         self.response_length = None
         self.divergent_thinking = None
         self.convergent_thinking = None
-        self.user_interaction = None
+        self.user_alignment = None
         self.further_instructions = []
         self.project_context = ""
         self.prompt = ""
@@ -43,8 +43,8 @@ class PromptBuilder:
         self.convergent_thinking = thinking
         return self
 
-    def set_user_interaction(self, interaction: UserInteraction):
-        self.user_interaction = interaction
+    def set_user_alignment(self, alignment: UserAlignment):
+        self.user_alignment = alignment
         return self
 
     def set_project_context(self, context: str):
@@ -102,9 +102,9 @@ class PromptBuilder:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
 
-        if self.user_interaction:
-            self.prompt += "User interaction:\n"
-            with open(self.user_interaction.value, "r", encoding="utf-8") as file:
+        if self.user_alignment:
+            self.prompt += "User alignment:\n"
+            with open(self.user_alignment.value, "r", encoding="utf-8") as file:
                 self.prompt += file.read() + "\n"
             self.prompt += "\n"
 

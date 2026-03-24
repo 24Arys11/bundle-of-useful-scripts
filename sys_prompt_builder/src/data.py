@@ -115,16 +115,16 @@ class Thinking:
             "Convergent": list(Thinking.Convergent)
         }
 
-class UserInteraction(Enum):
-    MINIMAL = "presets/user_interaction/1_minimal.txt"
-    LOW = "presets/user_interaction/2_low.txt"
-    MEDIUM = "presets/user_interaction/3_medium.txt"
-    HIGH = "presets/user_interaction/4_high.txt"
-    BABYSITTER = "presets/user_interaction/5_babysitter.txt"
+class UserAlignment(Enum):
+    MINIMAL = "presets/user_alignment/1_minimal.txt"
+    LOW = "presets/user_alignment/2_low.txt"
+    MEDIUM = "presets/user_alignment/3_medium.txt"
+    HIGH = "presets/user_alignment/4_high.txt"
+    MAXIMUM = "presets/user_alignment/5_maximum.txt"
 
     @staticmethod
-    def get_all_user_interactions():
-        return list(UserInteraction)
+    def get_all_user_alignments():
+        return list(UserAlignment)
 
 class Technologies:
     class Languages(Enum):

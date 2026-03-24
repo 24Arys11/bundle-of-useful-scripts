@@ -12,7 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from data import Roles, Thinking, UserInteraction, AdviceType, ResponseLength
+from data import Roles, Thinking, UserAlignment, AdviceType, ResponseLength
 from prompt_builder import PromptBuilder
 from wizard_state import (
     WizardState,
@@ -107,7 +107,7 @@ def build_prompt_from_state(state: WizardState) -> str:
 
     builder.set_convergent_thinking(state.convergent())
     builder.set_divergent_thinking(state.divergent())
-    builder.set_user_interaction(state.user_interaction_enum())
+    builder.set_user_alignment(state.user_alignment_enum())
     builder.set_response_length(state.response_length_enum())
 
     if state.coaching_selected:
@@ -228,7 +228,7 @@ def _build_json_data(state: WizardState, prompt: str) -> dict:
         "project_info": state.project_info,
         "convergent_thinking": state.convergent().name,
         "divergent_thinking": state.divergent().name,
-        "user_interaction": state.interaction,
+        "user_alignment": state.alignment,
         "advice_type": state.advice if state.coaching_selected else None,
         "language_restriction": state.language_restriction,
         "behavioral_policies": state.behavioral_policies,

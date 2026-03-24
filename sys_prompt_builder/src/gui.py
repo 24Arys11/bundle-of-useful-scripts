@@ -3,7 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 from prompt_builder import PromptBuilder
-from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserInteraction, Technologies, SpecialPrompts
+from data import Roles, Behaviours, AdviceType, ResponseLength, Thinking, UserAlignment, Technologies, SpecialPrompts
 import json
 import os
 
@@ -19,7 +19,7 @@ class PromptBuilderGUI:
         self.selected_response_length = None
         self.selected_divergent_thinking = None
         self.selected_convergent_thinking = None
-        self.selected_user_interaction = None
+        self.selected_user_alignment = None
 
         self.config_file = "config.json"
         self.theme = self.load_theme()
@@ -104,7 +104,7 @@ class PromptBuilderGUI:
                 row += 1
 
     def create_column4_buttons(self):
-        """Renders Response Length, User Interaction, and Advice Types stacked in column 4."""
+        """Renders Response Length, User Alignment, and Advice Types stacked in column 4."""
         col = 4
         row = 0
 
@@ -124,17 +124,17 @@ class PromptBuilderGUI:
 
         row += 1  # spacer
 
-        # --- User Interaction ---
-        ttk.Label(self.left_frame, text="User Interactions").grid(row=row, column=col, sticky="w", padx=5)
+        # --- User Alignment ---
+        ttk.Label(self.left_frame, text="User Alignment").grid(row=row, column=col, sticky="w", padx=5)
         row += 1
-        self.interaction_var = tk.StringVar(value="no_change")
-        ttk.Radiobutton(self.left_frame, text="UNPROMPTED", value="no_change", variable=self.interaction_var,
-                        command=lambda: self.set_user_interaction(None)).grid(row=row, column=col, sticky="w", padx=5)
+        self.alignment_var = tk.StringVar(value="no_change")
+        ttk.Radiobutton(self.left_frame, text="UNPROMPTED", value="no_change", variable=self.alignment_var,
+                        command=lambda: self.set_user_alignment(None)).grid(row=row, column=col, sticky="w", padx=5)
         row += 1
-        for interaction in UserInteraction.get_all_user_interactions():
-            ttk.Radiobutton(self.left_frame, text=interaction.name, value=interaction,
-                            variable=self.interaction_var,
-                            command=lambda i=interaction: self.set_user_interaction(i)
+        for alignment in UserAlignment.get_all_user_alignments():
+            ttk.Radiobutton(self.left_frame, text=alignment.name, value=alignment,
+                            variable=self.alignment_var,
+                            command=lambda i=alignment: self.set_user_alignment(i)
                             ).grid(row=row, column=col, sticky="w", padx=5)
             row += 1
 
@@ -233,8 +233,8 @@ class PromptBuilderGUI:
         elif category == "Convergent":
             self.selected_convergent_thinking = thinking
 
-    def set_user_interaction(self, interaction):
-        self.selected_user_interaction = interaction
+    def set_user_alignment(self, alignment):
+        self.selected_user_alignment = alignment
 
     def build_prompt(self):
         self.prompt_builder.roles = self.selected_roles
@@ -244,7 +244,7 @@ class PromptBuilderGUI:
         self.prompt_builder.response_length = self.selected_response_length
         self.prompt_builder.divergent_thinking = self.selected_divergent_thinking
         self.prompt_builder.convergent_thinking = self.selected_convergent_thinking
-        self.prompt_builder.user_interaction = self.selected_user_interaction
+        self.prompt_builder.user_alignment = self.selected_user_alignment
 
         prompt = self.prompt_builder.build()
         self.output_text.delete(1.0, tk.END)
