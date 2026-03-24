@@ -92,3 +92,7 @@ dmypy.json
 # Ignore Windows specific files
 Thumbs.db
 ehthumbs.db
+
+# Ignore personal presets and custom agents
+personal_presets/
+langgraph_code_template_generator/agents/
