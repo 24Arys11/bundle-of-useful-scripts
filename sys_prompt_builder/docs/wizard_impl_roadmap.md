@@ -75,23 +75,20 @@ sys_prompt_builder/
 ---
 
 ### Step 3 — Software System Architect Preset
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Write `src/presets/roles/tech_science/software_system_architect.txt`
-- [ ] Add `SOFTWARE_SYSTEM_ARCHITECT` entry to `Roles.TechScience` enum in `data.py`
+- [x] Write `src/presets/roles/tech_science/software_system_architect.txt`
+- [x] Add `SOFTWARE_SYSTEM_ARCHITECT` entry to `Roles.TechScience` enum in `data.py`
 
 **Alignment needed:** Review and approve the preset content before committing.
 
 ---
 
 ### Step 4 — Edit Researcher Role Prompt
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Review current `presets/roles/general_guidance/researcher.txt`
-- [ ] Refine prompt for clarity, scope, and quality
-- [ ] Align on final content before committing
-
-**Alignment needed:** Review and approve revised prompt content.
+- [x] Review current `presets/roles/general_guidance/researcher.txt`
+- [x] Refine prompt for agentic codebase + web research behavior
 
 ---
 

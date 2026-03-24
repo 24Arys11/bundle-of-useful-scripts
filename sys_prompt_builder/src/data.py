@@ -47,6 +47,7 @@ class Roles:
         CYBERSECURITY_SPECIALIST = "presets/roles/tech_science/cybersecurity_specialist.txt"
         DATA_SCIENTIST = "presets/roles/tech_science/data_scientist.txt"
         SOFTWARE_ENGINEER = "presets/roles/tech_science/software_engineer.txt"
+        SOFTWARE_SYSTEM_ARCHITECT = "presets/roles/tech_science/software_system_architect.txt"
         # Add more roles as needed
 
     @staticmethod
